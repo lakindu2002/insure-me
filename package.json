@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@eva-design/eva": "^2.1.1",
+    "@react-native-firebase/analytics": "^15.4.0",
+    "@react-native-firebase/app": "^15.4.0",
     "@ui-kitten/components": "^5.1.2",
     "react": "18.0.0",
     "react-native": "0.69.4",
