@@ -1,14 +1,14 @@
 import { FC, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Headline, TextInput, useTheme } from 'react-native-paper';
+import { Avatar, Caption, Divider, Headline, TextInput, useTheme } from 'react-native-paper';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
+import { CustomButton } from '@insureme/common/CustomButton';
 
 
 const styles = StyleSheet.create({
   container: {
     height: '100%',
     width: '100%',
-    backgroundColor: 'white'
   },
   wrapper: {
     height: '100%',
@@ -20,9 +20,13 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 33,
+    fontWeight: '700',
   },
   marginTop: {
-    marginTop: 10,
+    marginTop: 15,
+  },
+  caption: {
+    fontSize: 14
   }
 })
 
@@ -37,6 +41,7 @@ export const LoginScreen: FC<LoginScreenProps> = (props) => {
   const [toggleSecureEntry, setToggleSecureEntry] = useState<boolean>(true);
 
   const theme = useTheme();
+
   const handleEmailChange = (newEmail: string) => {
     setEmail(newEmail);
   };
@@ -47,14 +52,30 @@ export const LoginScreen: FC<LoginScreenProps> = (props) => {
 
   const handleLoginClick = () => {
     console.log('Login Clicked');
+    console.log(theme.colors.background);
   };
+
+  const handleSignUpClicked = () => {
+    console.log('Sign Up Clicked');
+  };
+
+  const handleForgotPasswordClicked = () => {
+    console.log('Forgot Password Clicked');
+  }
 
   return (
     <>
       <View
-        style={styles.container}
+        style={{ ...styles.container, backgroundColor: theme.colors.background }}
       >
         <View style={styles.wrapper}>
+          <Avatar.Image source={require('../../assets/logo.png')}
+            size={150}
+            style={{ alignSelf: 'center' }}
+          />
+          <Divider style={{
+            marginVertical: 25
+          }} />
           <Headline
             style={styles.heading}
           >
@@ -82,13 +103,31 @@ export const LoginScreen: FC<LoginScreenProps> = (props) => {
             />}
             style={styles.marginTop}
           />
-          <Button
+          <CustomButton
             onPress={handleLoginClick}
             mode='contained'
+            icon={'arrow-right'}
             style={{ ...styles.marginTop }}
-          >
-            Log In
-          </Button>
+            label={'Log In'}
+          />
+          <View style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 5,
+          }}>
+            <Caption
+              style={{ fontSize: 14 }}
+            >
+              No account? <Caption
+                onPress={handleSignUpClicked}
+                style={{ ...styles.caption, color: theme.colors.primary }}>Sign Up</Caption>
+            </Caption>
+            <Caption
+              onPress={handleForgotPasswordClicked}
+              style={{ ...styles.caption, color: theme.colors.primary }}>Forgot Password?
+            </Caption>
+          </View>
         </View>
       </View>
     </>
