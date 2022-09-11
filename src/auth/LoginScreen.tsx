@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Avatar, Caption, Divider, Headline, TextInput, useTheme } from 'react-native-paper';
+import { Avatar, Caption, Divider, Headline, TextInput, useTheme, withTheme } from 'react-native-paper';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { CustomButton } from '@insureme/common/CustomButton';
 
@@ -35,7 +35,7 @@ interface LoginScreenProps {
 
 }
 
-export const LoginScreen: FC<LoginScreenProps> = (props) => {
+const LoginScreen: FC<LoginScreenProps> = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [toggleSecureEntry, setToggleSecureEntry] = useState<boolean>(true);
@@ -66,7 +66,7 @@ export const LoginScreen: FC<LoginScreenProps> = (props) => {
   return (
     <>
       <View
-        style={{ ...styles.container, backgroundColor: theme.colors.background }}
+        style={{ ...styles.container, backgroundColor: theme.colors.surface }}
       >
         <View style={styles.wrapper}>
           <Avatar.Image source={require('../../assets/logo.png')}
@@ -133,3 +133,5 @@ export const LoginScreen: FC<LoginScreenProps> = (props) => {
     </>
   );
 };
+
+export default withTheme(LoginScreen);

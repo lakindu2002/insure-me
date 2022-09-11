@@ -1,12 +1,15 @@
 import React, { FC } from 'react';
 import { SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { LoginScreen } from '@insureme/auth/LoginScreen';
+import LoginScreen from '@insureme/auth/LoginScreen';
 import { DefaultTheme, Provider as ThemeProvider } from 'react-native-paper';
 
 const customTheme = {
   ...DefaultTheme,
-  roundness: 8
+  roundness: 8,
+  colors: {
+    ...DefaultTheme.colors,
+  },
 };
 
 const App: FC = () => {
