@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Avatar, Caption, Divider, Headline, TextInput, useTheme, withTheme } from 'react-native-paper';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { CustomButton } from '@insureme/common/CustomButton';
+import { AppLogo } from '@insureme/common/AppLogo';
 
 
 const styles = StyleSheet.create({
@@ -69,7 +70,7 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
         style={{ ...styles.container, backgroundColor: theme.colors.surface }}
       >
         <View style={styles.wrapper}>
-          <Avatar.Image source={require('../../assets/logo.png')}
+          <AppLogo
             size={150}
             style={{ alignSelf: 'center' }}
           />
