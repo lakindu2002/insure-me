@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   marginTop: {
-    marginTop: 15,
+    marginTop: 20,
   },
   caption: {
     fontSize: 14
