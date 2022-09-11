@@ -1,29 +1,28 @@
-import { ApplicationProvider, Button } from '@ui-kitten/components';
-import * as eva from '@eva-design/eva';
 import React, { FC } from 'react';
-import { SafeAreaView, useColorScheme } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-// eslint-disable-next-line import/no-named-default
-import { default as theme } from './theme.json';
+import { DefaultTheme, Provider as ThemeProvider } from 'react-native-paper';
+import LoginScreen from '@insureme/auth/LoginScreen';
+
+const customTheme = {
+  ...DefaultTheme,
+  roundness: 8,
+  colors: {
+    ...DefaultTheme.colors,
+  },
+};
 
 const App: FC = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const colorScheme = isDarkMode ? eva.dark : eva.light;
   return (
-    <NavigationContainer>
-      <ApplicationProvider
-        {...eva}
-        theme={{ ...colorScheme, ...theme }}
-      >
+    <ThemeProvider
+      theme={customTheme}
+    >
+      <NavigationContainer>
         <SafeAreaView>
-          <Button
-            status="primary"
-          >
-            Custom
-          </Button>
+          <LoginScreen />
         </SafeAreaView>
-      </ApplicationProvider>
-    </NavigationContainer>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 };
 
