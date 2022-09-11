@@ -1,7 +1,68 @@
-import { FC } from 'react';
-
+import * as Yup from 'yup';
+import React, { FC } from 'react';
+import { Dialog, Portal, TextInput } from 'react-native-paper';
+import { useFormik } from 'formik';
+import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
+import { CustomButton } from '@insureme/common/CustomButton';
+import { View } from 'react-native';
 interface ForgotPasswordScreenProps {
-
+  open: boolean
+  onClose: () => void
 }
 
-export const ForgotPasswordScreen: FC<ForgotPasswordScreenProps> = (props) => (<></>);
+export const ForgotPasswordScreen: FC<ForgotPasswordScreenProps> = (props) => {
+  const { open, onClose } = props;
+
+  const formik = useFormik({
+    initialValues: {
+      email: ''
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email('Email address poorly formatted').required('Email is required'),
+    }),
+    onSubmit: (values) => console.log(values)
+  });
+
+  return (
+    <Portal>
+      <Dialog
+        visible={open}
+        onDismiss={onClose}
+        dismissable={!formik.isSubmitting}
+      >
+        <Dialog.Title>
+          Reset Your Password
+        </Dialog.Title>
+        <Dialog.Content>
+          <OutlinedTextInput
+            value={formik.values.email}
+            onChangeText={formik.handleChange('email')}
+            error={Boolean(formik.touched.email && formik.errors.email)}
+            label="Email Address"
+            left={<TextInput.Icon name='email' disabled />}
+            helperText={formik.errors.email ? formik.touched.email && formik.errors.email : 'Provide the email that you created the account with'}
+          />
+        </Dialog.Content>
+        <Dialog.Actions>
+          <CustomButton
+            mode='outlined'
+            label='Close'
+            color='error'
+            onPress={onClose}
+            disabled={formik.isSubmitting}
+            style={{
+              marginRight: 10
+            }}
+          />
+          <CustomButton
+            mode='contained'
+            label='Send Reset Link'
+            onPress={formik.handleSubmit}
+            disabled={formik.isSubmitting}
+            loading={formik.isSubmitting}
+          />
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  );
+};

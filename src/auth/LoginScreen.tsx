@@ -7,6 +7,7 @@ import { CustomButton } from '@insureme/common/CustomButton';
 import { AppLogo } from '@insureme/common/AppLogo';
 import { globalStyles } from '@insureme/common/GlobalStyles';
 import { useFormik } from 'formik';
+import { ForgotPasswordScreen } from './ForgotPasswordScreen';
 
 
 const styles = StyleSheet.create({
@@ -33,6 +34,7 @@ interface LoginScreenProps {
 
 const LoginScreen: FC<LoginScreenProps> = (props) => {
   const [toggleSecureEntry, setToggleSecureEntry] = useState<boolean>(true);
+  const [openForgetPasswordModal, setOpenForgetPasswordModal] = useState<boolean>(false);
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Email address poorly formatted').required('Required'),
@@ -55,7 +57,7 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
   };
 
   const handleForgotPasswordClicked = () => {
-    console.log('Forgot Password Clicked');
+    setOpenForgetPasswordModal(true);
   }
 
   return (
@@ -128,6 +130,12 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
           </Caption>
         </View>
       </View>
+      {openForgetPasswordModal && (
+        <ForgotPasswordScreen
+          onClose={() => setOpenForgetPasswordModal(false)}
+          open={openForgetPasswordModal}
+        />
+      )}
     </View>
   );
 };
