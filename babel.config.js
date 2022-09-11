@@ -18,4 +18,10 @@ module.exports = {
             },
         ],
     ],
+    // reduce bundle size
+    env: {
+        production: {
+            plugins: ['react-native-paper/babel'],
+        },
+    },
 };

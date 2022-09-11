@@ -1,20 +1,28 @@
 import { FC, useState } from 'react';
-import { LoadingButton } from '@insureme/common/LoadingButton';
-import { Input, Layout } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
+import { Button, Headline, TextInput, useTheme } from 'react-native-paper';
+import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
     height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    padding: 40,
+    width: '100%',
+    backgroundColor: 'white'
   },
-  view: {
-    marginBottom: 10
+  wrapper: {
+    height: '100%',
+    width: '80%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
+  },
+  heading: {
+    fontSize: 33,
+  },
+  marginTop: {
+    marginTop: 10,
   }
 })
 
@@ -26,7 +34,9 @@ interface LoginScreenProps {
 export const LoginScreen: FC<LoginScreenProps> = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [toggleSecureEntry, setToggleSecureEntry] = useState<boolean>(true);
 
+  const theme = useTheme();
   const handleEmailChange = (newEmail: string) => {
     setEmail(newEmail);
   };
@@ -44,27 +54,41 @@ export const LoginScreen: FC<LoginScreenProps> = (props) => {
       <View
         style={styles.container}
       >
-        <View style={styles.view}>
-          <Input
+        <View style={styles.wrapper}>
+          <Headline
+            style={styles.heading}
+          >
+            Welcome Back!
+          </Headline>
+          <OutlinedTextInput
+            label={'Email'}
             value={email}
+            left={<TextInput.Icon name='email'
+              disabled
+            />}
+            style={styles.marginTop}
             onChangeText={handleEmailChange}
-            placeholder="Enter your email address"
           />
-        </View>
-        <View style={styles.view}>
-          <Input
+          <OutlinedTextInput
+            label={'Password'}
             value={password}
-            textContentType="password"
-            secureTextEntry={true}
-            placeholder="Enter your password"
             onChangeText={handlePasswordChange}
+            secureTextEntry={toggleSecureEntry}
+            left={<TextInput.Icon name='lock'
+              disabled
+            />}
+            right={<TextInput.Icon name={toggleSecureEntry ? 'eye' : 'eye-off'}
+              onPress={() => setToggleSecureEntry((prevState) => !prevState)}
+            />}
+            style={styles.marginTop}
           />
-        </View>
-        <View style={styles.view}>
-          <LoadingButton
+          <Button
             onPress={handleLoginClick}
-            label="Login"
-          />
+            mode='contained'
+            style={{ ...styles.marginTop }}
+          >
+            Log In
+          </Button>
         </View>
       </View>
     </>
