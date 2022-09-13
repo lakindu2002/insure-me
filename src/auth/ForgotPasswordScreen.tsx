@@ -4,7 +4,7 @@ import { Dialog, Portal, TextInput } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { CustomButton } from '@insureme/common/CustomButton';
-import { View } from 'react-native';
+import auth from '@react-native-firebase/auth';
 interface ForgotPasswordScreenProps {
   open: boolean
   onClose: () => void
@@ -20,7 +20,16 @@ export const ForgotPasswordScreen: FC<ForgotPasswordScreenProps> = (props) => {
     validationSchema: Yup.object({
       email: Yup.string().email('Email address poorly formatted').required('Email is required'),
     }),
-    onSubmit: (values) => console.log(values)
+    onSubmit: async (values) => {
+      const { email } = values;
+      try {
+        await auth().sendPasswordResetEmail(email);
+        onClose();
+      } catch (err) {
+        console.log(err);
+        // TODO: Handle error 
+      }
+    }
   });
 
   return (

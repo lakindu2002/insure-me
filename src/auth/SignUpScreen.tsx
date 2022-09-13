@@ -13,6 +13,7 @@ import {
   withTheme,
 } from 'react-native-paper';
 import { useFormik } from 'formik';
+import auth from '@react-native-firebase/auth';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -50,7 +51,15 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
       password: Yup.string().required('Password is required'),
       confirmPassword: Yup.string().required('Confirm Password is required').oneOf([Yup.ref('password'), null], 'Passwords must match'),
     }),
-    onSubmit: (values) => console.log(values)
+    onSubmit: async (values) => {
+      const { fullName, email, password } = values;
+      try {
+        await auth().createUserWithEmailAndPassword(email, password);
+        // TODO: Add user to firestore
+      } catch (err) {
+        // TODO: Handle error
+      }
+    }
   });
 
   return (
@@ -82,6 +91,7 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
           helperText={formik.touched.email && formik.errors.email}
         />
         <OutlinedTextInput
+          secureTextEntry
           label={'Password'}
           style={styles.marginTop}
           onChangeText={formik.handleChange('password')}
@@ -92,6 +102,7 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
           label={'Confirm Password'}
           style={styles.marginTop}
           onChangeText={formik.handleChange('confirmPassword')}
+          secureTextEntry
           error={Boolean(formik.touched.confirmPassword && formik.errors.confirmPassword)}
           helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
         />

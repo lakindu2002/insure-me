@@ -8,7 +8,7 @@ import { AppLogo } from '@insureme/common/AppLogo';
 import { globalStyles } from '@insureme/common/GlobalStyles';
 import { useFormik } from 'formik';
 import { ForgotPasswordScreen } from './ForgotPasswordScreen';
-
+import auth from '@react-native-firebase/auth';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -47,7 +47,15 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
       password: '',
     },
     validationSchema,
-    onSubmit: (values) => console.log(values)
+    onSubmit: async (values) => {
+      const { email, password } = values;
+      try {
+        await auth().signInWithEmailAndPassword(email, password);
+      } catch (err) {
+        console.log(err);
+        // TODO: Handle error
+      }
+    }
   })
 
   const theme = useTheme();

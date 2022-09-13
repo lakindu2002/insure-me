@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { DefaultTheme, Provider as ThemeProvider } from 'react-native-paper';
 import LoginScreen from '@insureme/auth/LoginScreen';
+import SignUpScreen from '@insureme/auth/SignUpScreen';
 
 const customTheme = {
   ...DefaultTheme,
@@ -19,7 +20,7 @@ const App: FC = () => {
     >
       <NavigationContainer>
         <SafeAreaView>
-          <LoginScreen />
+          <SignUpScreen />
         </SafeAreaView>
       </NavigationContainer>
     </ThemeProvider>
