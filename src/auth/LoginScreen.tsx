@@ -72,7 +72,6 @@ const LoginScreen: FC<LoginScreenProps> = ({ navigation }) => {
   const theme = useTheme();
 
   const handleSignUpClicked = () => {
-    console.log('sign up clicked')
     navigation.navigate('SignUp');
   };
 
