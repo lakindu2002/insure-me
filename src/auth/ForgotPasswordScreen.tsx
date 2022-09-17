@@ -4,7 +4,8 @@ import { Dialog, Portal, TextInput } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { CustomButton } from '@insureme/common/CustomButton';
-import auth from '@react-native-firebase/auth';
+import { useAuth } from './AuthContext';
+
 interface ForgotPasswordScreenProps {
   open: boolean
   onClose: () => void
@@ -12,6 +13,7 @@ interface ForgotPasswordScreenProps {
 
 export const ForgotPasswordScreen: FC<ForgotPasswordScreenProps> = (props) => {
   const { open, onClose } = props;
+  const { forgotPassword } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -23,7 +25,7 @@ export const ForgotPasswordScreen: FC<ForgotPasswordScreenProps> = (props) => {
     onSubmit: async (values) => {
       const { email } = values;
       try {
-        await auth().sendPasswordResetEmail(email);
+        await forgotPassword(email);
         onClose();
       } catch (err) {
         console.log(err);

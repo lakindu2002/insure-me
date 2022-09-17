@@ -8,7 +8,7 @@ import { AppLogo } from '@insureme/common/AppLogo';
 import { globalStyles } from '@insureme/common/GlobalStyles';
 import { useFormik } from 'formik';
 import { ForgotPasswordScreen } from './ForgotPasswordScreen';
-import auth from '@react-native-firebase/auth';
+import { useAuth } from './AuthContext';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -35,9 +35,10 @@ interface LoginScreenProps {
 const LoginScreen: FC<LoginScreenProps> = (props) => {
   const [toggleSecureEntry, setToggleSecureEntry] = useState<boolean>(true);
   const [openForgetPasswordModal, setOpenForgetPasswordModal] = useState<boolean>(false);
+  const { login } = useAuth();
 
   const validationSchema = Yup.object({
-    email: Yup.string().email('Email address poorly formatted').required('Required'),
+    email: Yup.string().email('Email address poorly formatted').required('Email is Required'),
     password: Yup.string().required('Password is required'),
   })
 
@@ -50,7 +51,7 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
     onSubmit: async (values) => {
       const { email, password } = values;
       try {
-        await auth().signInWithEmailAndPassword(email, password);
+        await login(email, password)
       } catch (err) {
         console.log(err);
         // TODO: Handle error

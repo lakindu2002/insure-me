@@ -13,7 +13,8 @@ import {
   withTheme,
 } from 'react-native-paper';
 import { useFormik } from 'formik';
-import auth from '@react-native-firebase/auth';
+import { useAuth } from './AuthContext';
+import { UserRole } from './User.type';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -37,6 +38,7 @@ interface SignUpScreenProps { }
 
 const SignUpScreen: FC<SignUpScreenProps> = (props) => {
   const theme = useTheme();
+  const { createUser } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -54,8 +56,7 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
     onSubmit: async (values) => {
       const { fullName, email, password } = values;
       try {
-        await auth().createUserWithEmailAndPassword(email, password);
-        // TODO: Add user to firestore
+        await createUser(email, fullName, UserRole.CUSTOMER, password);
       } catch (err) {
         // TODO: Handle error
       }
