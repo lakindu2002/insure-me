@@ -8,7 +8,8 @@ import { AppLogo } from '@insureme/common/AppLogo';
 import { globalStyles } from '@insureme/common/GlobalStyles';
 import { useFormik } from 'formik';
 import { ForgotPasswordScreen } from './ForgotPasswordScreen';
-
+import { useAuth } from './AuthContext';
+import { useToast } from 'react-native-toast-notifications';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -35,9 +36,11 @@ interface LoginScreenProps {
 const LoginScreen: FC<LoginScreenProps> = (props) => {
   const [toggleSecureEntry, setToggleSecureEntry] = useState<boolean>(true);
   const [openForgetPasswordModal, setOpenForgetPasswordModal] = useState<boolean>(false);
+  const { login } = useAuth();
+  const toast = useToast();
 
   const validationSchema = Yup.object({
-    email: Yup.string().email('Email address poorly formatted').required('Required'),
+    email: Yup.string().email('Email address poorly formatted').required('Email is Required'),
     password: Yup.string().required('Password is required'),
   })
 
@@ -47,7 +50,19 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
       password: '',
     },
     validationSchema,
-    onSubmit: (values) => console.log(values)
+    onSubmit: async (values) => {
+      const { email, password } = values;
+      try {
+        await login(email, password)
+      } catch (err) {
+        const parsedErr = err as any;
+        if (parsedErr.message.startsWith('[auth/]')) {
+          toast.show('Invalid Email Address or Password', { type: 'danger' });
+          return;
+        }
+        toast.show('An unknown error occured. Please try again', { type: 'danger' });
+      }
+    }
   })
 
   const theme = useTheme();

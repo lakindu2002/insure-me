@@ -4,7 +4,9 @@ import { Dialog, Portal, TextInput } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { CustomButton } from '@insureme/common/CustomButton';
-import { View } from 'react-native';
+import { useAuth } from './AuthContext';
+import { useToast } from 'react-native-toast-notifications';
+
 interface ForgotPasswordScreenProps {
   open: boolean
   onClose: () => void
@@ -12,6 +14,8 @@ interface ForgotPasswordScreenProps {
 
 export const ForgotPasswordScreen: FC<ForgotPasswordScreenProps> = (props) => {
   const { open, onClose } = props;
+  const { forgotPassword } = useAuth();
+  const toast = useToast();
 
   const formik = useFormik({
     initialValues: {
@@ -20,7 +24,16 @@ export const ForgotPasswordScreen: FC<ForgotPasswordScreenProps> = (props) => {
     validationSchema: Yup.object({
       email: Yup.string().email('Email address poorly formatted').required('Email is required'),
     }),
-    onSubmit: (values) => console.log(values)
+    onSubmit: async (values) => {
+      const { email } = values;
+      try {
+        await forgotPassword(email);
+      } catch (err) {
+      } finally {
+        toast.show('You will recieve an email if your email address is valid!', { type: 'success' });
+        onClose();
+      }
+    }
   });
 
   return (
