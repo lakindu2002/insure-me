@@ -13,6 +13,9 @@ import {
   withTheme,
 } from 'react-native-paper';
 import { useFormik } from 'formik';
+import { useAuth } from './AuthContext';
+import { UserRole } from './User.type';
+import { useToast } from 'react-native-toast-notifications';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -36,6 +39,8 @@ interface SignUpScreenProps { }
 
 const SignUpScreen: FC<SignUpScreenProps> = (props) => {
   const theme = useTheme();
+  const { createUser } = useAuth();
+  const toast = useToast();
 
   const formik = useFormik({
     initialValues: {
@@ -50,7 +55,18 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
       password: Yup.string().required('Password is required'),
       confirmPassword: Yup.string().required('Confirm Password is required').oneOf([Yup.ref('password'), null], 'Passwords must match'),
     }),
-    onSubmit: (values) => console.log(values)
+    onSubmit: async (values) => {
+      const { fullName, email, password } = values;
+      try {
+        await createUser(email, fullName, UserRole.CUSTOMER, password);
+      } catch (err) {
+        if ((err as any).message?.includes('[auth/email-already-in-use]')) {
+          toast.show('This email address is already in use', { type: 'danger' });
+          return;
+        }
+        toast.show('An error occurred while creating your account', { type: 'danger' });
+      }
+    }
   });
 
   return (
@@ -82,6 +98,7 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
           helperText={formik.touched.email && formik.errors.email}
         />
         <OutlinedTextInput
+          secureTextEntry
           label={'Password'}
           style={styles.marginTop}
           onChangeText={formik.handleChange('password')}
@@ -92,6 +109,7 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
           label={'Confirm Password'}
           style={styles.marginTop}
           onChangeText={formik.handleChange('confirmPassword')}
+          secureTextEntry
           error={Boolean(formik.touched.confirmPassword && formik.errors.confirmPassword)}
           helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
         />
