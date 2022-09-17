@@ -31,12 +31,12 @@ export const SplashScreen: FC<SplashScreenProps> = (props) => {
       return;
     }
     if (!user) {
-      // Navigate to login screen
-      navigation.navigate('Login');
+      navigation.replace('Login');
       return;
     }
     if (user && user.role === UserRole.CUSTOMER) {
-      navigation.navigate('CustomerDashboard');
+      navigation.replace('Customer');
+      return;
     }
   }, [user, initializing]);
 
