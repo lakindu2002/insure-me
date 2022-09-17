@@ -61,6 +61,7 @@ const SignUpScreen: FC<SignUpScreenProps> = ({ navigation }) => {
       const { fullName, email, password } = values;
       try {
         await createUser(email, fullName, UserRole.CUSTOMER, password);
+        navigation.navigate('Customer'); // navigate to customer dashboard
       } catch (err) {
         if ((err as any).message?.includes('[auth/email-already-in-use]')) {
           toast.show('This email address is already in use', { type: 'danger' });
