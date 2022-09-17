@@ -5,6 +5,7 @@ import { useFormik } from 'formik';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { CustomButton } from '@insureme/common/CustomButton';
 import { useAuth } from './AuthContext';
+import { useToast } from 'react-native-toast-notifications';
 
 interface ForgotPasswordScreenProps {
   open: boolean
@@ -14,6 +15,7 @@ interface ForgotPasswordScreenProps {
 export const ForgotPasswordScreen: FC<ForgotPasswordScreenProps> = (props) => {
   const { open, onClose } = props;
   const { forgotPassword } = useAuth();
+  const toast = useToast();
 
   const formik = useFormik({
     initialValues: {
@@ -26,10 +28,10 @@ export const ForgotPasswordScreen: FC<ForgotPasswordScreenProps> = (props) => {
       const { email } = values;
       try {
         await forgotPassword(email);
-        onClose();
       } catch (err) {
-        console.log(err);
-        // TODO: Handle error 
+      } finally {
+        toast.show('You will recieve an email if your email address is valid!', { type: 'success' });
+        onClose();
       }
     }
   });

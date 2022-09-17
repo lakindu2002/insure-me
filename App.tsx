@@ -1,8 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 import { SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { DefaultTheme, Provider as ThemeProvider } from 'react-native-paper';
+import { AuthConsumer, AuthProvider } from '@insureme/auth/AuthContext';
+import { SplashScreen } from '@insureme/common/SplashScreen';
 import LoginScreen from '@insureme/auth/LoginScreen';
+import { ToastProvider } from 'react-native-toast-notifications';
 import SignUpScreen from '@insureme/auth/SignUpScreen';
 
 const customTheme = {
@@ -15,15 +18,32 @@ const customTheme = {
 
 const App: FC = () => {
   return (
-    <ThemeProvider
-      theme={customTheme}
-    >
-      <NavigationContainer>
-        <SafeAreaView>
-          <SignUpScreen />
-        </SafeAreaView>
-      </NavigationContainer>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider
+        theme={customTheme}
+      >
+        <ToastProvider>
+          <NavigationContainer>
+            <SafeAreaView>
+              <AuthConsumer>
+                {({ initializing, user }) => (
+                  initializing ? <SplashScreen /> : (
+                    <Fragment>
+                      {user ? (
+                        <>
+                        </>
+                      ) : (
+                        <LoginScreen />
+                      )}
+                    </Fragment>
+                  )
+                )}
+              </AuthConsumer>
+            </SafeAreaView>
+          </NavigationContainer>
+        </ToastProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 };
 

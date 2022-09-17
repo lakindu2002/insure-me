@@ -15,6 +15,7 @@ import {
 import { useFormik } from 'formik';
 import { useAuth } from './AuthContext';
 import { UserRole } from './User.type';
+import { useToast } from 'react-native-toast-notifications';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -39,6 +40,7 @@ interface SignUpScreenProps { }
 const SignUpScreen: FC<SignUpScreenProps> = (props) => {
   const theme = useTheme();
   const { createUser } = useAuth();
+  const toast = useToast();
 
   const formik = useFormik({
     initialValues: {
@@ -58,7 +60,11 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
       try {
         await createUser(email, fullName, UserRole.CUSTOMER, password);
       } catch (err) {
-        // TODO: Handle error
+        if ((err as any).message?.includes('[auth/email-already-in-use]')) {
+          toast.show('This email address is already in use', { type: 'danger' });
+          return;
+        }
+        toast.show('An error occurred while creating your account', { type: 'danger' });
       }
     }
   });
