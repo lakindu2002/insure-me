@@ -1,10 +1,16 @@
-import { FC } from 'react';
+import { useAuth } from '@insureme/auth/AuthContext';
+import { UserRole } from '@insureme/auth/User.type';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { FC, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { AppLogo } from './AppLogo';
 import { globalStyles } from './GlobalStyles';
+import { RootStackNavigatorParamList } from './RootNavigator';
 
-interface SplashScreenProps { }
+type SplashScreenNavigatorProps = NativeStackScreenProps<RootStackNavigatorParamList, 'Splash'>;
+interface SplashScreenProps extends SplashScreenNavigatorProps { }
 
 const stylesheet = StyleSheet.create({
   wrapperCenter: {
@@ -16,7 +22,24 @@ const stylesheet = StyleSheet.create({
   }
 });
 
+
 export const SplashScreen: FC<SplashScreenProps> = (props) => {
+  const { navigation } = props;
+  const { user, initializing } = useAuth();
+  useEffect(() => {
+    if (initializing) {
+      return;
+    }
+    if (!user) {
+      // Navigate to login screen
+      navigation.navigate('Login');
+      return;
+    }
+    if (user && user.role === UserRole.CUSTOMER) {
+      navigation.navigate('CustomerDashboard');
+    }
+  }, [user, initializing]);
+
   return (
     <View style={[globalStyles.container, stylesheet.wrapperCenter]}>
       <AppLogo size={150} />

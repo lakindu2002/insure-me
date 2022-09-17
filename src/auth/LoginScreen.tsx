@@ -10,6 +10,8 @@ import { useFormik } from 'formik';
 import { ForgotPasswordScreen } from './ForgotPasswordScreen';
 import { useAuth } from './AuthContext';
 import { useToast } from 'react-native-toast-notifications';
+import { RootStackNavigatorParamList } from '@insureme/common/RootNavigator';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -29,11 +31,13 @@ const styles = StyleSheet.create({
 })
 
 
-interface LoginScreenProps {
+type LoginScreenNavigatorProps = NativeStackScreenProps<RootStackNavigatorParamList, 'Login'>;
+
+interface LoginScreenProps extends LoginScreenNavigatorProps {
 
 }
 
-const LoginScreen: FC<LoginScreenProps> = (props) => {
+const LoginScreen: FC<LoginScreenProps> = ({ navigation }) => {
   const [toggleSecureEntry, setToggleSecureEntry] = useState<boolean>(true);
   const [openForgetPasswordModal, setOpenForgetPasswordModal] = useState<boolean>(false);
   const { login } = useAuth();
@@ -68,7 +72,8 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
   const theme = useTheme();
 
   const handleSignUpClicked = () => {
-    console.log('Sign Up Clicked');
+    console.log('sign up clicked')
+    navigation.navigate('SignUp');
   };
 
   const handleForgotPasswordClicked = () => {
@@ -155,4 +160,4 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
   );
 };
 
-export default withTheme(LoginScreen);
+export default LoginScreen;

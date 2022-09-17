@@ -10,12 +10,13 @@ import {
   Divider,
   Headline,
   useTheme,
-  withTheme,
 } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { useAuth } from './AuthContext';
 import { UserRole } from './User.type';
 import { useToast } from 'react-native-toast-notifications';
+import { RootStackNavigatorParamList } from '@insureme/common/RootNavigator';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -34,10 +35,11 @@ const styles = StyleSheet.create({
   }
 })
 
+type SignUpNavigatorProps = NativeStackScreenProps<RootStackNavigatorParamList, 'SignUp'>;
 
-interface SignUpScreenProps { }
+interface SignUpScreenProps extends SignUpNavigatorProps { }
 
-const SignUpScreen: FC<SignUpScreenProps> = (props) => {
+const SignUpScreen: FC<SignUpScreenProps> = ({ navigation }) => {
   const theme = useTheme();
   const { createUser } = useAuth();
   const toast = useToast();
@@ -68,6 +70,10 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
       }
     }
   });
+
+  const onLoginPressed = () => {
+    navigation.navigate('Login');
+  }
 
   return (
     <View
@@ -131,6 +137,7 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
           <Caption style={{ fontSize: 14 }}>
             Already have an account?{' '}
             <Caption
+              onPress={onLoginPressed}
               style={{ ...styles.caption, color: theme.colors.primary }}>
               Log in
             </Caption>
@@ -141,4 +148,4 @@ const SignUpScreen: FC<SignUpScreenProps> = (props) => {
   );
 };
 
-export default withTheme(SignUpScreen);
+export default SignUpScreen;
