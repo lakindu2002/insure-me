@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { FC, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Caption, Divider, Headline, TextInput, useTheme, withTheme } from 'react-native-paper';
+import { Caption, Divider, Headline, TextInput, useTheme } from 'react-native-paper';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { CustomButton } from '@insureme/common/CustomButton';
 import { AppLogo } from '@insureme/common/AppLogo';
