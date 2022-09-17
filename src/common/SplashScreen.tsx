@@ -38,6 +38,10 @@ export const SplashScreen: FC<SplashScreenProps> = (props) => {
       navigation.replace('Customer');
       return;
     }
+    if (user && user.role === UserRole.CLAIM_ADJUSTER) {
+      navigation.replace('ClaimAdjuster');
+      return;
+    }
   }, [user, initializing]);
 
   return (

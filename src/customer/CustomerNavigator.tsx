@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FC } from 'react';
-import { CustomerVehiclesScreen } from './CustomerVehicles';
+import { CustomerVehiclesScreen } from './CustomerVehiclesScreen';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCarAlt } from '@fortawesome/free-solid-svg-icons/faCarAlt'
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons/faFileAlt'
