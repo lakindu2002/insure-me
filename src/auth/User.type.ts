@@ -3,6 +3,8 @@ export type User = {
   fullName: string;
   email: string;
   role: UserRole;
+  contact?: string;
+  address?: string
 };
 
 export enum UserRole {

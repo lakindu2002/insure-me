@@ -4,11 +4,13 @@ import { CustomerVehiclesScreen } from './CustomerVehiclesScreen';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCarAlt } from '@fortawesome/free-solid-svg-icons/faCarAlt'
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons/faFileAlt'
+import { faUserAlt } from '@fortawesome/free-solid-svg-icons/faUserAlt'
+import ProfileNavigator from '@insureme/profile/ProfileNavigator';
 
-
-type CustomerBottomTabNavigationParamList = {
+export type CustomerBottomTabNavigationParamList = {
   Vehicles: undefined;
   Claims: undefined;
+  Profile: undefined;
 }
 
 const CustomerBottomTabNavigation = createBottomTabNavigator<CustomerBottomTabNavigationParamList>();
@@ -22,14 +24,24 @@ const CustomerBottomTabNavigator: FC = () => {
             return (
               <FontAwesomeIcon
                 color={color}
-                icon={faCarAlt} />
+                icon={faCarAlt}
+              />
             )
           }
           if (route.name === 'Claims') {
             return (
               <FontAwesomeIcon
                 color={color}
-                icon={faFileAlt} />
+                icon={faFileAlt}
+              />
+            )
+          }
+          if (route.name === 'Profile') {
+            return (
+              <FontAwesomeIcon
+                color={color}
+                icon={faUserAlt}
+              />
             )
           }
         },
@@ -48,6 +60,10 @@ const CustomerBottomTabNavigator: FC = () => {
         options={{
           headerTitle: 'My Claims',
         }}
+      />
+      <CustomerBottomTabNavigation.Screen
+        name="Profile"
+        component={ProfileNavigator}
       />
     </CustomerBottomTabNavigation.Navigator>
   );
