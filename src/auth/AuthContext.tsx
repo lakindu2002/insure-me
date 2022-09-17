@@ -65,6 +65,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const updateUser = async (userId: string, patchAttr: Partial<User>) => {
     await usersCollection.doc(userId).update({ ...patchAttr });
+    setUser({ ...user, ...(patchAttr as User) });
   };
 
   const login = async (email: string, password: string) => {
