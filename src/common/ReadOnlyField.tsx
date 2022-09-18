@@ -2,13 +2,13 @@ import React, { FC } from 'react';
 import { View } from 'react-native';
 import { Divider, IconButton, List, useTheme } from 'react-native-paper';
 
-interface ReadOnlyTextFieldProps {
+interface ReadOnlyFieldProps {
   label: string;
-  content: string;
+  content: string | JSX.Element;
   onPress?: () => void;
 }
 
-export const ReadOnlyTextField: FC<ReadOnlyTextFieldProps> = props => {
+export const ReadOnlyField: FC<ReadOnlyFieldProps> = props => {
   const theme = useTheme();
   const { label, content, onPress } = props;
   return (
@@ -25,7 +25,11 @@ export const ReadOnlyTextField: FC<ReadOnlyTextFieldProps> = props => {
           fontSize: 16,
           fontWeight: '700',
         }}
-        description={content}
+        description={typeof content === 'string' ? content : descriptionProps => <View {...descriptionProps}
+          style={{ marginTop: 20 }}
+        >
+          {content}
+        </View>}
         descriptionStyle={{
           color: theme.colors.text,
           fontSize: 17,

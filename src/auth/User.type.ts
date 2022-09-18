@@ -6,6 +6,7 @@ export type User = {
   contact?: string;
   address?: string
   profilePictureUrl?: string;
+  nicImageUrl?: string;
 };
 
 export enum UserRole {

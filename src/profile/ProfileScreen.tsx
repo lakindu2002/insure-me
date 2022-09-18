@@ -1,16 +1,16 @@
 import { FC, useLayoutEffect } from 'react';
 import { useAuth } from '@insureme/auth/AuthContext';
-import { StyleSheet, ToastAndroid, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { globalStyles } from '@insureme/common/GlobalStyles';
 import { Avatar, IconButton, useTheme } from 'react-native-paper';
-import { ReadOnlyTextField } from '@insureme/common/ReadOnlyTextField';
+import { ReadOnlyField } from '@insureme/common/ReadOnlyField';
 import { ProfileStackNavigationParamList } from './ProfileNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import ImageCropPicker from 'react-native-image-crop-picker';
-import PermissionManager, { Permissions } from '@insureme/common/PermissionManager';
 import { useToast } from 'react-native-toast-notifications';
-import { openSettings } from 'react-native-permissions';
+import { UserRole } from '@insureme/auth/User.type';
+import { openCamera, openImagePicker } from '@insureme/common/ImagePicker.service';
+import { Image } from '@insureme/common/Image';
 
 type ProfileScreenNavigationProp = NativeStackScreenProps<ProfileStackNavigationParamList, 'View'>;
 
@@ -29,11 +29,21 @@ const stylesheet = StyleSheet.create({
 });
 
 export const ProfileScreen: FC<ProfileScreenProps> = (props) => {
-  const { user, updateProfilePicture } = useAuth();
+  const { user, updateProfilePicture, updateNicPhoto } = useAuth();
   const { navigation } = props;
   const theme = useTheme();
   const { showActionSheetWithOptions } = useActionSheet();
   const toast = useToast();
+
+  const photoActionSheetOptions: any = {
+    options: ['Take Photo', 'Choose from Library', 'Cancel'],
+    cancelButtonIndex: 2,
+    titleTextStyle: {
+      fontWeight: '700',
+    },
+    destructiveColor: theme.colors.error,
+    destructiveButtonIndex: 2
+  }
 
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
@@ -43,31 +53,13 @@ export const ProfileScreen: FC<ProfileScreenProps> = (props) => {
 
   const handleProfileIconUpdateActionClicked = async (mode: 'picker' | 'camera') => {
     try {
-      const isAuthorized = await PermissionManager.checkForRequest(mode === 'camera' ? Permissions.ANDROID.CAMERA : Permissions.ANDROID.READ_EXTERNAL_STORAGE);
-      if (!isAuthorized) {
-        ToastAndroid.show('Please enable camera and storage permissions to continue', ToastAndroid.LONG);
-        await openSettings();
-        return;
-      }
       let resp = null;
       if (mode === 'camera') {
-        resp = await ImageCropPicker.openCamera({
-          mediaType: 'photo',
-          cropping: true,
-          forceJpg: true,
-          maxFiles: 1,
-          writeTempFile: true,
-        })
+        resp = await openCamera();
       } else if (mode === 'picker') {
-        resp = await ImageCropPicker.openPicker({
-          mediaType: 'photo',
-          cropping: true,
-          forceJpg: true,
-          maxFiles: 1,
-          writeTempFile: true,
-        })
+        resp = await openImagePicker();
       }
-      if (resp === null) {
+      if (resp === null || !resp) {
         return;
       }
       await updateProfilePicture(user?.id || '', resp.path);
@@ -82,14 +74,8 @@ export const ProfileScreen: FC<ProfileScreenProps> = (props) => {
 
   const handleAvatarEditClicked = () => {
     showActionSheetWithOptions({
-      options: ['Take Photo', 'Choose from Library', 'Cancel'],
-      cancelButtonIndex: 2,
-      title: 'Select a photo',
-      titleTextStyle: {
-        fontWeight: '700',
-      },
-      destructiveColor: theme.colors.error,
-      destructiveButtonIndex: 2
+      ...photoActionSheetOptions,
+      title: 'Select or take a photo',
     }, async (buttonIndex) => {
       if (buttonIndex === 0) {
         // launch camera
@@ -107,57 +93,103 @@ export const ProfileScreen: FC<ProfileScreenProps> = (props) => {
     });
   };
 
+  const handleNicUpdateActionClicked = async (mode: 'picker' | 'camera') => {
+    try {
+      let resp = null;
+      if (mode === 'camera') {
+        resp = await openCamera();
+      } else if (mode === 'picker') {
+        resp = await openImagePicker();
+      }
+      if (resp === null || !resp) {
+        return;
+      }
+      await updateNicPhoto(user?.id || '', resp.path);
+    } catch (err) {
+      console.log(err);
+      if (((err as any)?.message || '').includes('User cancelled')) {
+        return;
+      }
+      toast.show('Error updating NIC picture', { type: 'danger' });
+    }
+  }
+
+  const launchNicImagePicker = () => {
+    showActionSheetWithOptions({
+      ...photoActionSheetOptions,
+      title: 'Select or take a photo of your NIC',
+    }, async (buttonIndex) => {
+      if (buttonIndex === 0) {
+        // launch camera
+        await handleNicUpdateActionClicked('camera');
+      } else if (buttonIndex === 1) {
+        // launch gallery
+        await handleNicUpdateActionClicked('picker');
+      }
+    });
+  }
+
   return (
-    <View style={globalStyles.container}>
-      <View style={stylesheet.avatarHolder}>
-        {user?.profilePictureUrl ? (
-          <Avatar.Image
-            onTouchEnd={handleAvatarEditClicked}
-            source={{ uri: user?.profilePictureUrl || '' }}
-            size={100}
-            style={{
-              marginVertical: 30,
-              marginLeft: 10
-            }}
+    <ScrollView>
+      <View style={globalStyles.container}>
+        <View style={stylesheet.avatarHolder}>
+          {user?.profilePictureUrl ? (
+            <Avatar.Image
+              onTouchEnd={handleAvatarEditClicked}
+              source={{ uri: user?.profilePictureUrl || '' }}
+              size={100}
+              style={{
+                marginVertical: 30,
+                marginLeft: 10
+              }}
+            />
+          ) : (
+            <Avatar.Icon
+              onTouchEnd={handleAvatarEditClicked}
+              icon={'account'}
+              size={100}
+              style={{
+                marginVertical: 30,
+                marginLeft: 10
+              }}
+            />
+          )}
+          <IconButton
+            onPress={handleAvatarEditClicked}
+            icon={'pencil'}
+            color={theme.colors.surface}
+            style={[stylesheet.avatarEditButton, { backgroundColor: theme.colors.onSurface }]}
           />
-        ) : (
-          <Avatar.Icon
-            onTouchEnd={handleAvatarEditClicked}
-            icon={'account'}
-            size={100}
-            style={{
-              marginVertical: 30,
-              marginLeft: 10
-            }}
+        </View>
+        <ReadOnlyField
+          content={user?.fullName || 'N/A'}
+          onPress={handleFieldPressed('Name')}
+          label="Full Name"
+        />
+        <ReadOnlyField
+          content={user?.email || 'N/A'}
+          label="Email"
+        />
+        <ReadOnlyField
+          content={user?.contact || 'N/A'}
+          onPress={handleFieldPressed('Contact')}
+          label="Contact Number"
+        />
+        <ReadOnlyField
+          content={user?.address || 'N/A'}
+          onPress={handleFieldPressed('Address')}
+          label="Residing Address"
+        />
+        {user?.role === UserRole.CUSTOMER && (
+          <ReadOnlyField
+            onPress={launchNicImagePicker}
+            label='National Identity Card'
+            content={user?.nicImageUrl ? <Image
+              source={{ uri: user?.nicImageUrl || '' }}
+            /> : 'Not Uploaded'}
           />
         )}
-        <IconButton
-          onPress={handleAvatarEditClicked}
-          icon={'pencil'}
-          color={theme.colors.surface}
-          style={[stylesheet.avatarEditButton, { backgroundColor: theme.colors.onSurface }]}
-        />
-      </View>
-      <ReadOnlyTextField
-        content={user?.fullName || 'N/A'}
-        onPress={handleFieldPressed('Name')}
-        label="Full Name"
-      />
-      <ReadOnlyTextField
-        content={user?.email || 'N/A'}
-        label="Email"
-      />
-      <ReadOnlyTextField
-        content={user?.contact || 'N/A'}
-        onPress={handleFieldPressed('Contact')}
-        label="Contact Number"
-      />
-      <ReadOnlyTextField
-        content={user?.address || 'N/A'}
-        onPress={handleFieldPressed('Address')}
-        label="Residing Address"
-
-      />
-    </View>
+      </View >
+    </ScrollView>
   )
 };

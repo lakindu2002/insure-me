@@ -14,6 +14,7 @@ type AuthContextType = {
   updateProfilePicture: (userId: string, filePath: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
+  updateNicPhoto: (userId: string, filePath: string) => Promise<void>;
   logout: () => Promise<void>;
   initializing: boolean;
 };
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
   forgotPassword: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   updateProfilePicture: () => Promise.resolve(),
+  updateNicPhoto: () => Promise.resolve(),
   initializing: true,
 });
 
@@ -40,7 +42,8 @@ const loadUserInformationById = async (userId: string) => {
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = React.useState<User | undefined>(undefined);
   const [initializing, setInitializing] = useState<boolean>(true);
-  const [imageUploaded, setImageUploaded] = useState<boolean>(false);
+  const [profilePhotoUploaded, setProfilePhotoUploaded] = useState<boolean>(false);
+  const [nicUploaded, setNicUploaded] = useState<boolean>(false);
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(async (user) => {
@@ -96,14 +99,27 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const updateProfilePicture = async (userId: string, filePath: string) => {
     const path = `profilePictures/${userId}`;
     const ref = storage().ref(path);
-    if (!imageUploaded) {
+    if (!profilePhotoUploaded) {
       await ref.putFile(filePath);
-      setImageUploaded(true);
+      setProfilePhotoUploaded(true);
     }
     const url = await ref.getDownloadURL();
     await usersCollection.doc(userId).update({ profilePictureUrl: url });
     setUser({ ...user as User, profilePictureUrl: url });
-    setImageUploaded(false);
+    setProfilePhotoUploaded(false);
+  }
+
+  const updateNicPhoto = async (userId: string, filePath: string) => {
+    const path = `nic/${userId}`;
+    const ref = storage().ref(path);
+    if (!nicUploaded) {
+      await ref.putFile(filePath);
+      setNicUploaded(true);
+    }
+    const url = await ref.getDownloadURL();
+    await usersCollection.doc(userId).update({ nicImageUrl: url });
+    setUser({ ...user as User, nicImageUrl: url });
+    setNicUploaded(false);
   }
 
   return (
@@ -117,6 +133,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         logout,
         initializing,
         updateProfilePicture,
+        updateNicPhoto
       }}>
       {children}
     </AuthContext.Provider>
