@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { View } from 'react-native';
 
-interface CustomerVehiclesScreenProps { }
+interface VehiclesScreenProps { }
 
-export const CustomerVehiclesScreen: FC<CustomerVehiclesScreenProps> = (props) => {
+export const VehiclesScreen: FC<VehiclesScreenProps> = (props) => {
   return (
     <>
       <View>

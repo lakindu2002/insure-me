@@ -1,7 +1,7 @@
 import LoginScreen from '@insureme/auth/LoginScreen';
 import SignUpScreen from '@insureme/auth/SignUpScreen';
-import ClaimAdjusterBottomTabsNavigator from '@insureme/claim_adjuster/ClaimAdjusterNavigator';
-import CustomerBottomTabNavigator from '@insureme/customer/CustomerNavigator';
+import ClaimAdjusterBottomTabsNavigator from '@insureme/common/ClaimAdjusterNavigator';
+import CustomerBottomTabNavigator from '@insureme/common/CustomerNavigator';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FC } from 'react';
 import { SplashScreen } from './SplashScreen';

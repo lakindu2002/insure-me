@@ -1,11 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FC } from 'react';
-import { CustomerVehiclesScreen } from './CustomerVehiclesScreen';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCarAlt } from '@fortawesome/free-solid-svg-icons/faCarAlt'
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons/faFileAlt'
 import { faUserAlt } from '@fortawesome/free-solid-svg-icons/faUserAlt'
 import ProfileNavigator from '@insureme/profile/ProfileNavigator';
+import { VehiclesScreen } from '@insureme/vehicles/VehiclesScreen';
+import { ClaimListScreen } from '@insureme/claims/ClaimListScreen';
 
 export type CustomerBottomTabNavigationParamList = {
   Vehicles: undefined;
@@ -49,14 +50,14 @@ const CustomerBottomTabNavigator: FC = () => {
     >
       <CustomerBottomTabNavigation.Screen
         name="Vehicles"
-        component={CustomerVehiclesScreen}
+        component={VehiclesScreen}
         options={{
           headerTitle: 'My Vehicles',
         }}
       />
       <CustomerBottomTabNavigation.Screen
         name="Claims"
-        component={CustomerVehiclesScreen}
+        component={ClaimListScreen}
         options={{
           headerTitle: 'My Claims',
         }}

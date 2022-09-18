@@ -1,6 +1,6 @@
+import { ClaimListScreen } from '@insureme/claims/ClaimListScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FC } from 'react';
-import { ClaimAdjusterAllClaimsScreen } from './ClaimAdjusterAllClaimsScreen';
 
 type ClaimAdjusterBottomTabNavigationParamList = {
   AllClaims: undefined;
@@ -16,7 +16,7 @@ const ClaimAdjusterBottomTabsNavigator: FC = () => {
     <ClaimAdjusterBottomTabsNavigation.Navigator>
       <ClaimAdjusterBottomTabsNavigation.Screen
         name="AllClaims"
-        component={ClaimAdjusterAllClaimsScreen}
+        component={ClaimListScreen}
       />
     </ClaimAdjusterBottomTabsNavigation.Navigator>
   );
