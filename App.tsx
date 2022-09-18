@@ -4,8 +4,7 @@ import { DefaultTheme, Provider as ThemeProvider } from 'react-native-paper';
 import { AuthProvider } from '@insureme/auth/AuthContext';
 import { ToastProvider } from 'react-native-toast-notifications';
 import RootNavigator from '@insureme/common/RootNavigator';
-import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { connectActionSheet } from '@expo/react-native-action-sheet';
+import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 
 const customTheme = {
   ...DefaultTheme,

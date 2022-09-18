@@ -7,6 +7,7 @@ import { faUserAlt } from '@fortawesome/free-solid-svg-icons/faUserAlt'
 import ProfileNavigator from '@insureme/profile/ProfileNavigator';
 import { VehiclesScreen } from '@insureme/vehicles/VehiclesScreen';
 import { ClaimListScreen } from '@insureme/claims/ClaimListScreen';
+import { useTheme } from 'react-native-paper';
 
 export type CustomerBottomTabNavigationParamList = {
   Vehicles: undefined;
@@ -17,14 +18,15 @@ export type CustomerBottomTabNavigationParamList = {
 const CustomerBottomTabNavigation = createBottomTabNavigator<CustomerBottomTabNavigationParamList>();
 
 const CustomerBottomTabNavigator: FC = () => {
+  const theme = useTheme();
   return (
     <CustomerBottomTabNavigation.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
+        tabBarIcon: ({ color, focused }) => {
           if (route.name === 'Vehicles') {
             return (
               <FontAwesomeIcon
-                color={color}
+                color={focused ? theme.colors.primary : color}
                 icon={faCarAlt}
               />
             )
@@ -32,7 +34,7 @@ const CustomerBottomTabNavigator: FC = () => {
           if (route.name === 'Claims') {
             return (
               <FontAwesomeIcon
-                color={color}
+                color={focused ? theme.colors.primary : color}
                 icon={faFileAlt}
               />
             )
@@ -40,12 +42,22 @@ const CustomerBottomTabNavigator: FC = () => {
           if (route.name === 'Profile') {
             return (
               <FontAwesomeIcon
-                color={color}
+                color={focused ? theme.colors.primary : color}
                 icon={faUserAlt}
               />
             )
           }
         },
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarStyle: {
+          backgroundColor: theme.colors.background
+        },
+        headerStyle: {
+          backgroundColor: theme.colors.background
+        },
+        headerTitleStyle: {
+          color: theme.colors.text
+        }
       })}
     >
       <CustomerBottomTabNavigation.Screen

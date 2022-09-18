@@ -40,9 +40,16 @@ export const ProfileScreen: FC<ProfileScreenProps> = (props) => {
     cancelButtonIndex: 2,
     titleTextStyle: {
       fontWeight: '700',
+      color: theme.colors.text,
     },
     destructiveColor: theme.colors.error,
-    destructiveButtonIndex: 2
+    destructiveButtonIndex: 2,
+    containerStyle: {
+      backgroundColor: theme.colors.background,
+    },
+    textStyle: {
+      color: theme.colors.text,
+    }
   }
 
   useLayoutEffect(() => {
@@ -130,7 +137,9 @@ export const ProfileScreen: FC<ProfileScreenProps> = (props) => {
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{
+      backgroundColor: theme.colors.background,
+    }}>
       <View style={globalStyles.container}>
         <View style={stylesheet.avatarHolder}>
           {user?.profilePictureUrl ? (

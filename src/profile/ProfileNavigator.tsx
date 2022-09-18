@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FC } from 'react';
+import { useTheme } from 'react-native-paper';
 import { ProfileItemEditScreen } from './ProfileItemEditScreen';
 import { ProfileScreen } from './ProfileScreen';
 
@@ -19,10 +20,19 @@ export type ProfileStackNavigationParamList = {
 const ProfileNavigation = createNativeStackNavigator<ProfileStackNavigationParamList>();
 
 const ProfileNavigator: FC = () => {
+  const theme = useTheme();
   return (
     <ProfileNavigation.Navigator
       initialRouteName='View'
-      screenOptions={{ presentation: 'modal', headerShown: true }}>
+      screenOptions={{
+        presentation: 'modal', headerShown: true,
+        headerStyle: {
+          backgroundColor: theme.colors.background,
+        },
+        headerTitleStyle: {
+          color: theme.colors.text,
+        }
+      }}>
       <ProfileNavigation.Screen name="Name" component={ProfileItemEditScreen}
         options={{
           headerTitle: 'Edit Full Name'
