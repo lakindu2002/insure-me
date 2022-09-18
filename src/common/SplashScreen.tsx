@@ -58,7 +58,8 @@ export const SplashScreen: FC<SplashScreenProps> = (props) => {
 
   return (
     <View style={[globalStyles.container, stylesheet.wrapperCenter]}>
-      <AppLogo size={150} />
+      <AppLogo width={150}
+        height={150} />
       <View style={stylesheet.marginTop}>
         <ActivityIndicator
           animating

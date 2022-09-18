@@ -83,7 +83,9 @@ const SignUpScreen: FC<SignUpScreenProps> = ({ navigation }) => {
         backgroundColor: theme.colors.surface,
       }}>
       <View style={styles.wrapper}>
-        <AppLogo size={150} style={{ alignSelf: 'center' }} />
+        <AppLogo width={150}
+          height={150}
+        />
         <Divider
           style={{
             marginVertical: 25,

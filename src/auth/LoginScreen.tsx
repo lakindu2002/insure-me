@@ -85,8 +85,8 @@ const LoginScreen: FC<LoginScreenProps> = ({ navigation }) => {
     >
       <View style={styles.wrapper}>
         <AppLogo
-          size={150}
-          style={{ alignSelf: 'center' }}
+          width={150}
+          height={150}
         />
         <Divider style={{
           marginVertical: 25

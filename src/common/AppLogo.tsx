@@ -1,22 +1,17 @@
 import { FC } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { Avatar } from 'react-native-paper';
-
+import Logo from '../../assets/logo.svg';
 interface AppLogoProps {
-  size?: number;
-  style?: StyleProp<ViewStyle>;
+  width?: number;
+  height?: number;
 }
 
-export const AppLogo: FC<AppLogoProps> = ({ size, style }) => {
+export const AppLogo: FC<AppLogoProps> = ({ width = 150, height = 150 }) => {
   return (
-    <Avatar.Image
-      source={require('../../assets/logo.png')}
-      {...size && {
-        size
-      }}
-      {...style && {
-        style
-      }}
+    <Logo
+      width={width}
+      height={height}
     />
   );
 };
