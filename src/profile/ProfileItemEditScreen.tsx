@@ -64,6 +64,9 @@ export const ProfileItemEditScreen: FC<ProfileItemEditScreenProps> = (props) => 
         <OutlinedTextInput
           label={routeName}
           value={formik.values.value}
+          {...routeName === 'Address' && {
+            multiline: true
+          }}
           error={Boolean(formik.touched.value && formik.errors.value)}
           helperText={formik.touched.value && formik.errors.value}
           onChangeText={formik.handleChange('value')}

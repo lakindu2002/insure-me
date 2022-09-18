@@ -2,6 +2,8 @@ import React, { createContext, FC, useContext, useEffect, useState } from 'react
 import { User, UserRole } from './User.type';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+import { AsyncStorage } from 'react-native';
 
 const usersCollection = firestore().collection('users');
 
@@ -9,6 +11,7 @@ type AuthContextType = {
   user: User | undefined;
   createUser: (email: string, fullName: string, role: UserRole, password: string) => Promise<void>;
   updateUser: (userId: string, user: Partial<User>) => Promise<void>;
+  updateProfilePicture: (userId: string, filePath: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -22,6 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   login: () => Promise.resolve(),
   forgotPassword: () => Promise.resolve(),
   logout: () => Promise.resolve(),
+  updateProfilePicture: () => Promise.resolve(),
   initializing: true,
 });
 
@@ -36,6 +40,7 @@ const loadUserInformationById = async (userId: string) => {
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = React.useState<User | undefined>(undefined);
   const [initializing, setInitializing] = useState<boolean>(true);
+  const [imageUploaded, setImageUploaded] = useState<boolean>(false);
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(async (user) => {
@@ -88,6 +93,19 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setUser(undefined);
   }
 
+  const updateProfilePicture = async (userId: string, filePath: string) => {
+    const path = `profilePictures/${userId}`;
+    const ref = storage().ref(path);
+    if (!imageUploaded) {
+      await ref.putFile(filePath);
+      setImageUploaded(true);
+    }
+    const url = await ref.getDownloadURL();
+    await usersCollection.doc(userId).update({ profilePictureUrl: url });
+    setUser({ ...user as User, profilePictureUrl: url });
+    setImageUploaded(false);
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -97,7 +115,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         login,
         forgotPassword,
         logout,
-        initializing
+        initializing,
+        updateProfilePicture,
       }}>
       {children}
     </AuthContext.Provider>

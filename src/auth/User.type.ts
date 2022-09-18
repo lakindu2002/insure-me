@@ -5,6 +5,7 @@ export type User = {
   role: UserRole;
   contact?: string;
   address?: string
+  profilePictureUrl?: string;
 };
 
 export enum UserRole {

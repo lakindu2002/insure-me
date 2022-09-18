@@ -15,6 +15,7 @@ export const ReadOnlyTextField: FC<ReadOnlyTextFieldProps> = props => {
     <View>
       <List.Item
         title={label}
+        descriptionEllipsizeMode='tail'
         onPress={onPress}
         style={{
           backgroundColor: theme.colors.surface,
