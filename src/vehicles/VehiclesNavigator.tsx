@@ -27,7 +27,7 @@ const VehiclesNavigator: FC = () => {
     >
       <VehiclesStackNavigator.Screen name='VehicleList'
         options={{
-          headerTitle: 'My Vehicles'
+          headerTitle: 'Vehicles'
         }}
         component={VehiclesScreen}
       />

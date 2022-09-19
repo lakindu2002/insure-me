@@ -4,6 +4,7 @@ import { Alert, StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { Vehicle as VehicleComponent } from './Vehicle';
 import { Vehicle as VehicleType } from './Vehicle.type';
+import { Alert as AlertComponent } from '@insureme/common/Alert';
 
 interface VehicleListProps {
   vehicles: VehicleType[]
@@ -63,6 +64,13 @@ export const VehicleList: FC<VehicleListProps> = (props) => {
 
   return (
     <View style={styles.margin10}>
+      {vehicles.length === 0 && (
+        <AlertComponent
+          title={'No Vehicles'}
+          message={'You have no vehicles. Click the + button to add a vehicle.'}
+          variant={'warning'}
+        />
+      )}
       {vehicles.map((vehicle) => (
         <View
           key={vehicle.id}
