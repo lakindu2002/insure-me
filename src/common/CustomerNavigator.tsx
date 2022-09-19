@@ -5,9 +5,9 @@ import { faCarAlt } from '@fortawesome/free-solid-svg-icons/faCarAlt'
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons/faFileAlt'
 import { faUserAlt } from '@fortawesome/free-solid-svg-icons/faUserAlt'
 import ProfileNavigator from '@insureme/profile/ProfileNavigator';
-import { ClaimListScreen } from '@insureme/claims/ClaimListScreen';
 import { useTheme } from 'react-native-paper';
 import VehiclesNavigator from '@insureme/vehicles/VehiclesNavigator';
+import ClaimNavigator from '@insureme/claims/ClaimNavigator';
 
 export type CustomerBottomTabNavigationParamList = {
   Vehicles: undefined;
@@ -69,7 +69,7 @@ const CustomerBottomTabNavigator: FC = () => {
       />
       <CustomerBottomTabNavigation.Screen
         name="Claims"
-        component={ClaimListScreen}
+        component={ClaimNavigator}
         options={{
           headerTitle: 'My Claims',
         }}
