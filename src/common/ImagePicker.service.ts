@@ -3,7 +3,7 @@ import ImageCropPicker from 'react-native-image-crop-picker';
 import PermissionManager, { Permissions } from './PermissionManager';
 import { ToastAndroid } from 'react-native';
 
-export const openCamera = async () => {
+export const openCamera = async (maxFiles: number = 1) => {
   const isAuthorized = await PermissionManager.checkForRequest(
     Permissions.ANDROID.CAMERA,
   );
@@ -19,12 +19,13 @@ export const openCamera = async () => {
     mediaType: 'photo',
     cropping: true,
     forceJpg: true,
-    maxFiles: 1,
+    maxFiles,
+    minFiles: maxFiles,
     writeTempFile: true,
   });
 };
 
-export const openImagePicker = async () => {
+export const openImagePicker = async (maxFiles: number = 1) => {
   const isAuthorized = await PermissionManager.checkForRequest(
     Permissions.ANDROID.READ_EXTERNAL_STORAGE,
   );
@@ -40,7 +41,8 @@ export const openImagePicker = async () => {
     mediaType: 'photo',
     cropping: true,
     forceJpg: true,
-    maxFiles: 1,
+    maxFiles,
+    minFiles: maxFiles,
     writeTempFile: true,
   });
 };

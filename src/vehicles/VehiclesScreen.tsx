@@ -1,11 +1,14 @@
+import { CustomerBottomTabNavigationParamList } from '@insureme/common/CustomerNavigator';
 import { FloatingActionButton } from '@insureme/common/FloatingActionButton';
-import { FC } from 'react';
+import { useCamera } from '@insureme/common/UseCamera';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { FC, useLayoutEffect } from 'react';
 import { ScrollView } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { Vehicle } from './Vehicle.type';
 import { VehicleList } from './VehicleList';
+import { VehiclesNavigatorParamList } from './VehiclesNavigator';
 
-interface VehiclesScreenProps { }
 
 const vehicles: Vehicle[] = [
   {
@@ -34,11 +37,21 @@ const vehicles: Vehicle[] = [
   },
 ];
 
-export const VehiclesScreen: FC<VehiclesScreenProps> = (props) => {
+type VehiclesScreenNavigatorProps = NativeStackScreenProps<VehiclesNavigatorParamList, 'VehicleList'>;
+
+interface VehiclesScreenProps extends VehiclesScreenNavigatorProps { }
+
+export const VehiclesScreen: FC<VehiclesScreenProps> = ({ navigation }) => {
   const theme = useTheme();
 
+  useLayoutEffect(() => {
+    navigation.getParent()?.setOptions({
+      headerShown: false,
+    })
+  }, []);
+
   const handleNewClicked = () => {
-    console.log('new clicked');
+    navigation.navigate('NewVehicle');
   };
 
   return (
