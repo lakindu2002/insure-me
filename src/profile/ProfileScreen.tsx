@@ -112,7 +112,6 @@ export const ProfileScreen: FC<ProfileScreenProps> = (props) => {
       }
       await updateNicPhoto(user?.id || '', resp.path);
     } catch (err) {
-      console.log(err);
       if (((err as any)?.message || '').includes('User cancelled')) {
         return;
       }
