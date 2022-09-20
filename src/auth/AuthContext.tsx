@@ -3,9 +3,11 @@ import { User, UserRole } from './User.type';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import { AsyncStorage } from 'react-native';
+import { Appearance, AsyncStorage } from 'react-native';
 
 const usersCollection = firestore().collection('users');
+
+const darkModeLocalKey = 'darkMode';
 
 type AuthContextType = {
   user: User | undefined;
@@ -46,6 +48,14 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [nicUploaded, setNicUploaded] = useState<boolean>(false);
 
   useEffect(() => {
+    const loadMode = async () => {
+      const darkMode = await AsyncStorage.getItem(darkModeLocalKey) || 'false';
+      setUser((prevUser) => prevUser ? { ...prevUser, preferredMode: darkMode === 'true' ? 'dark' : 'light' } : { preferredMode: darkMode === 'true' ? 'dark' : 'light' } as User);
+    }
+    loadMode();
+  }, []);
+
+  useEffect(() => {
     const subscriber = auth().onAuthStateChanged(async (user) => {
       if (!user) {
         setUser(undefined);
@@ -54,7 +64,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       }
       const userInfoResp = await loadUserInformationById(user.uid);
       const userInfo = userInfoResp.data() as User;
-      setUser(userInfo);
+      setUser(userInfo); // if the color mode changed from another device, sync it here.
       setInitializing(false);
     });
     return subscriber; // unsubscribe on unmount
@@ -67,11 +77,15 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       email,
       fullName,
       role,
+      preferredMode: Appearance.getColorScheme() as 'light' | 'dark',
     }
     await usersCollection.doc(firebaseAuthCreateResp.user.uid).set(user)
   };
 
   const updateUser = async (userId: string, patchAttr: Partial<User>) => {
+    if (patchAttr.preferredMode) {
+      await AsyncStorage.setItem(darkModeLocalKey, patchAttr.preferredMode === 'dark' ? 'true' : 'false');
+    }
     await usersCollection.doc(userId).update({ ...patchAttr });
     setUser({ ...user, ...(patchAttr as User) });
   };

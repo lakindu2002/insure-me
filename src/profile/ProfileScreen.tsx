@@ -1,8 +1,8 @@
-import { FC, useLayoutEffect } from 'react';
+import { FC, useEffect, useLayoutEffect, useState } from 'react';
 import { useAuth } from '@insureme/auth/AuthContext';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { globalStyles } from '@insureme/common/GlobalStyles';
-import { Avatar, IconButton, useTheme } from 'react-native-paper';
+import { Avatar, IconButton, Switch, Text, useTheme } from 'react-native-paper';
 import { ReadOnlyField } from '@insureme/common/ReadOnlyField';
 import { ProfileStackNavigationParamList } from './ProfileNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -29,11 +29,22 @@ const stylesheet = StyleSheet.create({
 });
 
 export const ProfileScreen: FC<ProfileScreenProps> = (props) => {
-  const { user, updateProfilePicture, updateNicPhoto } = useAuth();
+  const { user, updateProfilePicture, updateNicPhoto, updateUser } = useAuth();
   const { navigation } = props;
   const theme = useTheme();
   const { showActionSheetWithOptions } = useActionSheet();
   const toast = useToast();
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(user?.preferredMode === 'dark');
+
+  const handleModeChange = async () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    try {
+      await updateUser(user?.id || '', { preferredMode: newMode ? 'dark' : 'light' })
+    } catch (err) {
+      setIsDarkMode(!newMode);
+    }
+  }
 
   const photoActionSheetOptions: any = {
     options: ['Take Photo', 'Choose from Library', 'Cancel'],
@@ -168,6 +179,30 @@ export const ProfileScreen: FC<ProfileScreenProps> = (props) => {
             style={[stylesheet.avatarEditButton, { backgroundColor: theme.colors.onSurface }]}
           />
         </View>
+        <ReadOnlyField
+          content={<>
+            <View style={{
+              alignItems: 'center',
+              display: 'flex',
+              flexDirection: 'row',
+            }}>
+              <Switch
+                color={theme.colors.primary}
+                onValueChange={handleModeChange}
+                value={isDarkMode}
+              />
+              <Text
+                style={{
+                  fontWeight: '700',
+                }}
+              >
+                Dark Mode
+              </Text>
+            </View>
+          </>
+          }
+          label="Preferences"
+        />
         <ReadOnlyField
           content={user?.fullName || 'N/A'}
           onPress={handleFieldPressed('Name')}

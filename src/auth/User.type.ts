@@ -7,6 +7,7 @@ export type User = {
   address?: string
   profilePictureUrl?: string;
   nicImageUrl?: string;
+  preferredMode: 'dark' | 'light';
 };
 
 export enum UserRole {
