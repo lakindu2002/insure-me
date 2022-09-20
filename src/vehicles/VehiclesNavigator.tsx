@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FC } from 'react';
 import { useTheme } from 'react-native-paper';
+import { VehiclesProvider } from './VehicleContext';
 import { VehicleNewScreen } from './VehicleNewScreen';
 import { VehiclesScreen } from './VehiclesScreen';
 
@@ -14,29 +15,31 @@ const VehiclesStackNavigator = createNativeStackNavigator<VehiclesNavigatorParam
 const VehiclesNavigator: FC = () => {
   const theme = useTheme();
   return (
-    <VehiclesStackNavigator.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: theme.colors.background
-        },
-        headerTitleStyle: {
-          color: theme.colors.text
-        }
-      }}
-      initialRouteName='VehicleList'
-    >
-      <VehiclesStackNavigator.Screen name='VehicleList'
-        options={{
-          headerTitle: 'Vehicles'
+    <VehiclesProvider>
+      <VehiclesStackNavigator.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: theme.colors.background
+          },
+          headerTitleStyle: {
+            color: theme.colors.text
+          }
         }}
-        component={VehiclesScreen}
-      />
-      <VehiclesStackNavigator.Screen name='NewVehicle'
-        options={{
-          headerTitle: 'Add New Vehicle'
-        }}
-        component={VehicleNewScreen} />
-    </VehiclesStackNavigator.Navigator>
+        initialRouteName='VehicleList'
+      >
+        <VehiclesStackNavigator.Screen name='VehicleList'
+          options={{
+            headerTitle: 'Vehicles'
+          }}
+          component={VehiclesScreen}
+        />
+        <VehiclesStackNavigator.Screen name='NewVehicle'
+          options={{
+            headerTitle: 'Add New Vehicle'
+          }}
+          component={VehicleNewScreen} />
+      </VehiclesStackNavigator.Navigator>
+    </VehiclesProvider>
   )
 }
 

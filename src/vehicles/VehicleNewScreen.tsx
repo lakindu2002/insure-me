@@ -3,14 +3,20 @@ import { globalStyles } from '@insureme/common/GlobalStyles';
 import { Image } from '@insureme/common/Image';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { useCamera } from '@insureme/common/UseCamera';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFormik } from 'formik';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { IconButton, useTheme } from 'react-native-paper';
+import { HelperText, IconButton, useTheme } from 'react-native-paper';
 import { useToast } from 'react-native-toast-notifications';
 import * as Yup from 'yup';
+import { Vehicle } from './Vehicle.type';
+import { useVehicles } from './VehicleContext';
+import { VehiclesNavigatorParamList } from './VehiclesNavigator';
 
-interface VehicleNewScreenProps { }
+type VehicleNewScreenNavigatorProps = NativeStackScreenProps<VehiclesNavigatorParamList, 'NewVehicle'>;
+
+interface VehicleNewScreenProps extends VehicleNewScreenNavigatorProps { }
 
 const styles = StyleSheet.create({
   container: {
@@ -28,10 +34,11 @@ const styles = StyleSheet.create({
   }
 });
 
-export const VehicleNewScreen: FC<VehicleNewScreenProps> = (props) => {
+export const VehicleNewScreen: FC<VehicleNewScreenProps> = ({ navigation }) => {
   const theme = useTheme();
-  const toast = useToast();
   const { launchPhotoSelection, images } = useCamera(5);
+  const { addVehicle } = useVehicles();
+  const toast = useToast();
 
   const handleUploadClick = () => {
     launchPhotoSelection();
@@ -53,10 +60,18 @@ export const VehicleNewScreen: FC<VehicleNewScreenProps> = (props) => {
       pictureUrl: Yup.string().required('Picture is required')
     }),
     onSubmit: async (values) => {
+      const vehicle: Partial<Vehicle> = { ...values, chassisNumber: values.chassisNumber.toUpperCase().trim() };
       try {
-        console.log(values);
+        await addVehicle(vehicle);
+        toast.show('Vehicle created successfully', { type: 'success' });
+        navigation.replace('VehicleList');
       } catch (err) {
-        toast.show('Error creating vehicle', { type: 'danger' });
+        if ((err as any).code === 'firestore/permission-denied') {
+          // error occurs due to custom rule of duplicate entry
+          toast.show('A vehicle with the chassis number already exists', { type: 'danger' });
+          return;
+        }
+        toast.show('We ran into an error while creating the vehicle', { type: 'danger' });
       }
     }
   })
@@ -79,11 +94,14 @@ export const VehicleNewScreen: FC<VehicleNewScreenProps> = (props) => {
           borderColor: theme.colors.disabled,
           borderWidth: 1,
           borderRadius: 5,
-        }] : []
+        }] : [],
+        ...!!formik.errors.pictureUrl ? [{
+          borderColor: theme.colors.error,
+        }] : [],
         ]}
       >
         {
-          formik.values.pictureUrl && (
+          !!formik.values.pictureUrl && (
             <Image
               source={{ uri: formik.values.pictureUrl }}
               style={{
@@ -107,6 +125,11 @@ export const VehicleNewScreen: FC<VehicleNewScreenProps> = (props) => {
           onPress={handleUploadClick}
         />
       </View>
+      <HelperText
+        visible={Boolean(formik.errors.pictureUrl)}
+        type={'error'}>
+        {formik.errors.pictureUrl}
+      </HelperText>
       <OutlinedTextInput
         label={'License Plate'}
         value={formik.values.licensePlate}
@@ -124,15 +147,6 @@ export const VehicleNewScreen: FC<VehicleNewScreenProps> = (props) => {
         style={styles.marginTop20}
       />
       <OutlinedTextInput
-        label={'Vehicle Model'}
-        placeholder={'e.g. Corolla'}
-        value={formik.values.model}
-        onChangeText={formik.handleChange('model')}
-        error={Boolean(formik.touched.model && formik.errors.model)}
-        helperText={formik.touched.model && formik.errors.model}
-        style={styles.marginTop20}
-      />
-      <OutlinedTextInput
         label={'Vehicle Make'}
         placeholder={'e.g. Toyota'}
         value={formik.values.brand}
@@ -141,8 +155,17 @@ export const VehicleNewScreen: FC<VehicleNewScreenProps> = (props) => {
         helperText={formik.touched.brand && formik.errors.brand}
         style={styles.marginTop20}
       />
+      <OutlinedTextInput
+        label={'Vehicle Model'}
+        placeholder={'e.g. Corolla'}
+        value={formik.values.model}
+        onChangeText={formik.handleChange('model')}
+        error={Boolean(formik.touched.model && formik.errors.model)}
+        helperText={formik.touched.model && formik.errors.model}
+        style={styles.marginTop20}
+      />
       <CustomButton
-        label='Save Car'
+        label='Save Vehicle'
         mode='contained'
         style={styles.marginTop20}
         loading={formik.isSubmitting}
