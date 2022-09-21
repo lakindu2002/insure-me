@@ -16,5 +16,5 @@ const claimStatusNames = {
   [ClaimStatus.REJECTED]: 'Rejected',
 }
 
-export const getAccidentTypeName = (type: AccidentType) => accidentTypeNames[type];
+export const getAccidentTypeName = (type: AccidentType, appendText: string = '') => `${accidentTypeNames[type]} ${appendText}`;
 export const getClaimStatusName = (status: ClaimStatus) => claimStatusNames[status];
