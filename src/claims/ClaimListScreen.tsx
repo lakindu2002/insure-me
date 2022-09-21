@@ -71,7 +71,7 @@ export const ClaimListScreen: FC<ClaimListScreenProps> = ({ navigation }) => {
   }, []);
 
   const handleOnNewClaimPressed = () => {
-    console.log('new claim pressed');
+    navigation.navigate('NewClaim');
   };
 
   const handleTabChange = (index: number) => {
