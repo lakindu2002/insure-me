@@ -38,6 +38,6 @@ export type Claim = {
     email: string;
     phone: string;
   }
-  expectedAmount?: number;
+  expectedAmount: number;
   approvedAmount?: number;
 };
