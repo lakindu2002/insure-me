@@ -1,14 +1,13 @@
-import { faUserAlt } from '@fortawesome/free-solid-svg-icons';
+import { faFileAlt, faUserAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { ClaimListScreen } from '@insureme/claims/ClaimListScreen';
+import ClaimNavigator from '@insureme/claims/ClaimNavigator';
 import ProfileNavigator from '@insureme/profile/ProfileNavigator';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useTheme } from '@react-navigation/native';
 import React, { FC } from 'react';
+import { useTheme } from 'react-native-paper';
 
 type ClaimAdjusterBottomTabNavigationParamList = {
-  AllClaims: undefined;
-  AssignedClaims: undefined;
+  Claims: undefined;
   Profile: undefined;
 };
 
@@ -20,16 +19,12 @@ const ClaimAdjusterBottomTabsNavigator: FC = () => {
     <ClaimAdjusterBottomTabsNavigation.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, focused }) => {
-          if (route.name === 'AllClaims') {
+          if (route.name === 'Claims') {
             return (
-              <>
-              </>
-            )
-          }
-          if (route.name === 'AssignedClaims') {
-            return (
-              <>
-              </>
+              <FontAwesomeIcon
+                color={focused ? theme.colors.primary : color}
+                icon={faFileAlt}
+              />
             )
           }
           if (route.name === 'Profile') {
@@ -54,8 +49,8 @@ const ClaimAdjusterBottomTabsNavigator: FC = () => {
       })}
     >
       <ClaimAdjusterBottomTabsNavigation.Screen
-        name="AllClaims"
-        component={ClaimListScreen}
+        name="Claims"
+        component={ClaimNavigator}
       />
       <ClaimAdjusterBottomTabsNavigation.Screen
         name="Profile"
