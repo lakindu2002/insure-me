@@ -9,4 +9,7 @@ export const globalStyles = StyleSheet.create({
     fontSize: 33,
     fontWeight: '700',
   },
+  positionRelative: {
+    position: 'relative',
+  }
 });

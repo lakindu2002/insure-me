@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { FC, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Caption, Divider, Headline, TextInput, useTheme, withTheme } from 'react-native-paper';
+import { Caption, Divider, Headline, TextInput, useTheme } from 'react-native-paper';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { CustomButton } from '@insureme/common/CustomButton';
 import { AppLogo } from '@insureme/common/AppLogo';
@@ -10,6 +10,8 @@ import { useFormik } from 'formik';
 import { ForgotPasswordScreen } from './ForgotPasswordScreen';
 import { useAuth } from './AuthContext';
 import { useToast } from 'react-native-toast-notifications';
+import { RootStackNavigatorParamList } from '@insureme/common/RootNavigator';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -29,11 +31,13 @@ const styles = StyleSheet.create({
 })
 
 
-interface LoginScreenProps {
+type LoginScreenNavigatorProps = NativeStackScreenProps<RootStackNavigatorParamList, 'Login'>;
+
+interface LoginScreenProps extends LoginScreenNavigatorProps {
 
 }
 
-const LoginScreen: FC<LoginScreenProps> = (props) => {
+const LoginScreen: FC<LoginScreenProps> = ({ navigation }) => {
   const [toggleSecureEntry, setToggleSecureEntry] = useState<boolean>(true);
   const [openForgetPasswordModal, setOpenForgetPasswordModal] = useState<boolean>(false);
   const { login } = useAuth();
@@ -68,7 +72,7 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
   const theme = useTheme();
 
   const handleSignUpClicked = () => {
-    console.log('Sign Up Clicked');
+    navigation.navigate('SignUp');
   };
 
   const handleForgotPasswordClicked = () => {
@@ -81,8 +85,8 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
     >
       <View style={styles.wrapper}>
         <AppLogo
-          size={150}
-          style={{ alignSelf: 'center' }}
+          width={150}
+          height={150}
         />
         <Divider style={{
           marginVertical: 25
@@ -155,4 +159,4 @@ const LoginScreen: FC<LoginScreenProps> = (props) => {
   );
 };
 
-export default withTheme(LoginScreen);
+export default LoginScreen;
