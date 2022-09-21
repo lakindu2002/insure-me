@@ -4,11 +4,12 @@ import { globalStyles } from '@insureme/common/GlobalStyles';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFormik } from 'formik';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { ProfileStackNavigationParamList } from './ProfileNavigator';
 import * as Yup from 'yup';
+import { useTheme } from 'react-native-paper';
 
 type ProfileItemEditScreenNavigationProps = NativeStackScreenProps<ProfileStackNavigationParamList, 'Name' | 'Contact' | 'Address'>;
 
@@ -59,7 +60,7 @@ export const ProfileItemEditScreen: FC<ProfileItemEditScreenProps> = (props) => 
   })
 
   return (
-    <View style={[globalStyles.container, { justifyContent: 'center', alignContent: 'center', position: 'relative' }]}>
+    <View style={[globalStyles.container, { justifyContent: 'center', alignContent: 'center', position: 'relative', backgroundColor: useTheme().colors.background }]}>
       <View style={[styles.container,]}>
         <OutlinedTextInput
           label={routeName}
