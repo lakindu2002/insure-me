@@ -43,10 +43,10 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
       let query = claimRef.where('status', '==', selectedClaimStatus);
       if (mode === 'managing') {
         if (selectedClaimStatus !== ClaimStatus.PENDING) {
-          query = query.where('managerId', '==', userId);
+          query = query.where('managerId', '==', userId).orderBy('time', 'desc');
         }
-      } else { 
-        query = query.where('ownerId', '==', userId);
+      } else {
+        query = query.where('ownerId', '==', userId).orderBy('time', 'desc');
       }
       const data = await query.get();
       if (data.empty) {
