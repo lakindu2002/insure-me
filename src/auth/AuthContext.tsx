@@ -3,7 +3,8 @@ import { User, UserRole } from './User.type';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import { Appearance, AsyncStorage } from 'react-native';
+import { Appearance } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const usersCollection = firestore().collection('users');
 

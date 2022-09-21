@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FC } from 'react';
 import { useTheme } from 'react-native-paper';
 import { ClaimListScreen } from './ClaimListScreen';
+import { ClaimsProvider } from './ClaimsContext';
 
 export type ClaimNavigatorParamList = {
   ClaimList: undefined;
@@ -15,25 +16,27 @@ const ClaimNavigatorStack =
 const ClaimNavigator: FC = () => {
   const theme = useTheme();
   return (
-    <ClaimNavigatorStack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: theme.colors.background
-        },
-        headerTitleStyle: {
-          color: theme.colors.text
-        }
-      }}
-      initialRouteName='ClaimList'
-    >
-      <ClaimNavigatorStack.Screen
-        name="ClaimList"
-        component={ClaimListScreen}
-        options={{
-          headerTitle: 'Claims',
+    <ClaimsProvider>
+      <ClaimNavigatorStack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: theme.colors.background
+          },
+          headerTitleStyle: {
+            color: theme.colors.text
+          }
         }}
-      />
-    </ClaimNavigatorStack.Navigator>
+        initialRouteName='ClaimList'
+      >
+        <ClaimNavigatorStack.Screen
+          name="ClaimList"
+          component={ClaimListScreen}
+          options={{
+            headerTitle: 'Claims',
+          }}
+        />
+      </ClaimNavigatorStack.Navigator>
+    </ClaimsProvider>
   );
 };
 
