@@ -25,6 +25,5 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/function-component-definition': 'off',
-    'no-use-before-define': 'off',
   },
 };

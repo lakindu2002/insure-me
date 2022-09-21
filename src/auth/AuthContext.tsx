@@ -2,15 +2,22 @@ import React, { createContext, FC, useContext, useEffect, useState } from 'react
 import { User, UserRole } from './User.type';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+import { Appearance } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const usersCollection = firestore().collection('users');
+
+const darkModeLocalKey = 'darkMode';
 
 type AuthContextType = {
   user: User | undefined;
   createUser: (email: string, fullName: string, role: UserRole, password: string) => Promise<void>;
   updateUser: (userId: string, user: Partial<User>) => Promise<void>;
+  updateProfilePicture: (userId: string, filePath: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
+  updateNicPhoto: (userId: string, filePath: string) => Promise<void>;
   logout: () => Promise<void>;
   initializing: boolean;
 };
@@ -22,6 +29,8 @@ const AuthContext = createContext<AuthContextType>({
   login: () => Promise.resolve(),
   forgotPassword: () => Promise.resolve(),
   logout: () => Promise.resolve(),
+  updateProfilePicture: () => Promise.resolve(),
+  updateNicPhoto: () => Promise.resolve(),
   initializing: true,
 });
 
@@ -36,6 +45,16 @@ const loadUserInformationById = async (userId: string) => {
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = React.useState<User | undefined>(undefined);
   const [initializing, setInitializing] = useState<boolean>(true);
+  const [profilePhotoUploaded, setProfilePhotoUploaded] = useState<boolean>(false);
+  const [nicUploaded, setNicUploaded] = useState<boolean>(false);
+
+  useEffect(() => {
+    const loadMode = async () => {
+      const darkMode = await AsyncStorage.getItem(darkModeLocalKey) || 'false';
+      setUser((prevUser) => prevUser ? { ...prevUser, preferredMode: darkMode === 'true' ? 'dark' : 'light' } : { preferredMode: darkMode === 'true' ? 'dark' : 'light' } as User);
+    }
+    loadMode();
+  }, []);
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(async (user) => {
@@ -46,7 +65,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       }
       const userInfoResp = await loadUserInformationById(user.uid);
       const userInfo = userInfoResp.data() as User;
-      setUser(userInfo);
+      setUser(userInfo); // if the color mode changed from another device, sync it here.
       setInitializing(false);
     });
     return subscriber; // unsubscribe on unmount
@@ -59,12 +78,17 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       email,
       fullName,
       role,
+      preferredMode: Appearance.getColorScheme() as 'light' | 'dark',
     }
     await usersCollection.doc(firebaseAuthCreateResp.user.uid).set(user)
   };
 
   const updateUser = async (userId: string, patchAttr: Partial<User>) => {
+    if (patchAttr.preferredMode) {
+      await AsyncStorage.setItem(darkModeLocalKey, patchAttr.preferredMode === 'dark' ? 'true' : 'false');
+    }
     await usersCollection.doc(userId).update({ ...patchAttr });
+    setUser({ ...user, ...(patchAttr as User) });
   };
 
   const login = async (email: string, password: string) => {
@@ -87,6 +111,32 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setUser(undefined);
   }
 
+  const updateProfilePicture = async (userId: string, filePath: string) => {
+    const path = `profilePictures/${userId}`;
+    const ref = storage().ref(path);
+    if (!profilePhotoUploaded) {
+      await ref.putFile(filePath);
+      setProfilePhotoUploaded(true);
+    }
+    const url = await ref.getDownloadURL();
+    await usersCollection.doc(userId).update({ profilePictureUrl: url });
+    setUser({ ...user as User, profilePictureUrl: url });
+    setProfilePhotoUploaded(false);
+  }
+
+  const updateNicPhoto = async (userId: string, filePath: string) => {
+    const path = `nic/${userId}`;
+    const ref = storage().ref(path);
+    if (!nicUploaded) {
+      await ref.putFile(filePath);
+      setNicUploaded(true);
+    }
+    const url = await ref.getDownloadURL();
+    await usersCollection.doc(userId).update({ nicImageUrl: url });
+    setUser({ ...user as User, nicImageUrl: url });
+    setNicUploaded(false);
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -96,7 +146,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         login,
         forgotPassword,
         logout,
-        initializing
+        initializing,
+        updateProfilePicture,
+        updateNicPhoto
       }}>
       {children}
     </AuthContext.Provider>

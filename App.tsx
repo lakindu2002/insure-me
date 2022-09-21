@@ -1,50 +1,67 @@
-import React, { FC, Fragment } from 'react';
-import { SafeAreaView } from 'react-native';
+import React, { FC, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { DefaultTheme, Provider as ThemeProvider } from 'react-native-paper';
+import { DarkTheme, DefaultTheme, Provider as ThemeProvider } from 'react-native-paper';
 import { AuthConsumer, AuthProvider } from '@insureme/auth/AuthContext';
-import { SplashScreen } from '@insureme/common/SplashScreen';
-import LoginScreen from '@insureme/auth/LoginScreen';
 import { ToastProvider } from 'react-native-toast-notifications';
-import SignUpScreen from '@insureme/auth/SignUpScreen';
+import RootNavigator from '@insureme/common/RootNavigator';
+import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
+import storage from '@react-native-firebase/firestore';
 
-const customTheme = {
-  ...DefaultTheme,
+
+const baseTheme = {
   roundness: 8,
+};
+
+const lightTheme = {
+  ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
   },
-};
+  ...baseTheme,
+}
+
+const darkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+  },
+  ...baseTheme,
+}
+
+const FirestoreWrapper: FC<{ children: JSX.Element }> = ({ children }) => {
+  useEffect(() => {
+    const enablePersistence = async () => {
+      await storage().settings({ persistence: true });
+    }
+    enablePersistence();
+  }, []);
+
+  return children;
+}
 
 const App: FC = () => {
   return (
-    <AuthProvider>
-      <ThemeProvider
-        theme={customTheme}
-      >
-        <ToastProvider>
-          <NavigationContainer>
-            <SafeAreaView>
-              <AuthConsumer>
-                {({ initializing, user }) => (
-                  initializing ? <SplashScreen /> : (
-                    <Fragment>
-                      {user ? (
-                        <>
-                        </>
-                      ) : (
-                        <LoginScreen />
-                      )}
-                    </Fragment>
-                  )
-                )}
-              </AuthConsumer>
-            </SafeAreaView>
-          </NavigationContainer>
-        </ToastProvider>
-      </ThemeProvider>
-    </AuthProvider>
+    <FirestoreWrapper>
+      <ActionSheetProvider>
+        <AuthProvider>
+          <AuthConsumer>
+            {({ user }) => (
+              <ThemeProvider
+                theme={user?.preferredMode === 'dark' ? darkTheme : lightTheme}
+              >
+                <ToastProvider>
+                  <NavigationContainer>
+                    <RootNavigator />
+                  </NavigationContainer>
+                </ToastProvider>
+              </ThemeProvider>
+            )}
+
+          </AuthConsumer>
+        </AuthProvider >
+      </ActionSheetProvider>
+    </FirestoreWrapper>
   );
 };
 
-export default App;
+export default connectActionSheet(App);
