@@ -9,11 +9,6 @@ export enum AccidentType {
   HIT_AND_RUN = 'hit-and-run',
 }
 
-export type AccidentLocation = {
-  latitude: number;
-  longitude: number;
-};
-
 export enum ClaimStatus {
   PENDING = 'pending',
   PROCESSING = 'processing',
@@ -21,23 +16,31 @@ export enum ClaimStatus {
   REJECTED = 'rejected',
 }
 
+export type ClaimVehicle = {
+  licensePlate: string;
+  chassisNumber: string;
+  model: string;
+  brand: string;
+  pictureUrl: string;
+}
+
 export type Claim = {
   accidentType: AccidentType;
   id: string;
-  location: AccidentLocation;
-  pictures: string[];
-  vehicle: Vehicle;
+  vehicle: ClaimVehicle;
   createdAt: number;
   updatedAt: number;
   time: number;
   status: ClaimStatus;
-  userId: string;
-  user: {
+  ownerId: string;
+  owner: {
     name: string;
     nic: string;
-    email: string;
     phone: string;
   }
+  expectedCurrency: string;
   expectedAmount: number;
   approvedAmount?: number;
+  location: string;
+  pictures: string[];
 };
