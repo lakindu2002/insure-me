@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useEffect, useState } from 'react';
+import React, { createContext, FC, useContext, useEffect, useReducer, useState } from 'react';
 import { User, UserRole } from './User.type';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -10,8 +10,17 @@ const usersCollection = firestore().collection('users');
 
 const darkModeLocalKey = 'darkMode';
 
-type AuthContextType = {
+interface State {
   user: User | undefined;
+  initializing: boolean;
+}
+
+const initialState: State = {
+  user: undefined,
+  initializing: true,
+}
+
+interface AuthContextType extends State {
   createUser: (email: string, fullName: string, role: UserRole, password: string) => Promise<void>;
   updateUser: (userId: string, user: Partial<User>) => Promise<void>;
   updateProfilePicture: (userId: string, filePath: string) => Promise<void>;
@@ -19,11 +28,10 @@ type AuthContextType = {
   forgotPassword: (email: string) => Promise<void>;
   updateNicPhoto: (userId: string, filePath: string) => Promise<void>;
   logout: () => Promise<void>;
-  initializing: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
-  user: undefined,
+  ...initialState,
   createUser: () => Promise.resolve(),
   updateUser: () => Promise.resolve(),
   login: () => Promise.resolve(),
@@ -31,9 +39,59 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => Promise.resolve(),
   updateProfilePicture: () => Promise.resolve(),
   updateNicPhoto: () => Promise.resolve(),
-  initializing: true,
 });
 
+type INITIALIZE_USER_ACTION = {
+  type: 'INITIALIZE_USER';
+  payload: User | undefined;
+}
+
+type UPDATE_USER_ACTION = {
+  type: 'UPDATE_USER';
+  payload: Partial<User>;
+}
+
+type CLEAR_USER_ACTION = {
+  type: 'CLEAR_USER';
+}
+
+type INITIALIZING_USER_ACTION = {
+  type: 'INITIALIZING_USER';
+  payload: boolean;
+}
+
+type Action = INITIALIZE_USER_ACTION | UPDATE_USER_ACTION | CLEAR_USER_ACTION | INITIALIZING_USER_ACTION;
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'INITIALIZE_USER':
+      return {
+        ...state,
+        user: action.payload,
+        initializing: false,
+      };
+    case 'UPDATE_USER':
+      return {
+        ...state,
+        user: {
+          ...state.user && { ...state.user },
+          ...action.payload as User,
+        },
+      };
+    case 'CLEAR_USER':
+      return {
+        ...state,
+        user: undefined,
+      }
+    case 'INITIALIZING_USER':
+      return {
+        ...state,
+        initializing: action.payload,
+      }
+    default:
+      return state;
+  }
+}
 interface AuthProviderProps {
   children: React.ReactNode;
 }
@@ -43,15 +101,21 @@ const loadUserInformationById = async (userId: string) => {
 }
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = React.useState<User | undefined>(undefined);
-  const [initializing, setInitializing] = useState<boolean>(true);
   const [profilePhotoUploaded, setProfilePhotoUploaded] = useState<boolean>(false);
   const [nicUploaded, setNicUploaded] = useState<boolean>(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     const loadMode = async () => {
       const darkMode = await AsyncStorage.getItem(darkModeLocalKey) || 'false';
-      setUser((prevUser) => prevUser ? { ...prevUser, preferredMode: darkMode === 'true' ? 'dark' : 'light' } : { preferredMode: darkMode === 'true' ? 'dark' : 'light' } as User);
+      dispatch(
+        {
+          type: 'UPDATE_USER',
+          payload: state.user ?
+            { ...state.user, preferredMode: darkMode === 'true' ? 'dark' : 'light' }
+            : { preferredMode: darkMode === 'true' ? 'dark' : 'light' }
+        }
+      );
     }
     loadMode();
   }, []);
@@ -59,14 +123,13 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(async (user) => {
       if (!user) {
-        setUser(undefined);
-        setInitializing(false);
-        return;
+        dispatch({ type: 'CLEAR_USER' });
+      } else {
+        const userInfoResp = await loadUserInformationById(user.uid);
+        const userInfo = userInfoResp.data() as User;
+        // if the color mode changed from another device, sync it here.
+        dispatch({ type: 'INITIALIZE_USER', payload: userInfo });
       }
-      const userInfoResp = await loadUserInformationById(user.uid);
-      const userInfo = userInfoResp.data() as User;
-      setUser(userInfo); // if the color mode changed from another device, sync it here.
-      setInitializing(false);
     });
     return subscriber; // unsubscribe on unmount
   }, []);
@@ -88,7 +151,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       await AsyncStorage.setItem(darkModeLocalKey, patchAttr.preferredMode === 'dark' ? 'true' : 'false');
     }
     await usersCollection.doc(userId).update({ ...patchAttr });
-    setUser({ ...user, ...(patchAttr as User) });
+    dispatch({ type: 'UPDATE_USER', payload: patchAttr });
   };
 
   const login = async (email: string, password: string) => {
@@ -99,7 +162,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       throw new Error('User not found');
     }
     const userInfo = userInfoResp.data() as User;
-    setUser(userInfo);
+    dispatch({ type: 'INITIALIZE_USER', payload: userInfo });
   };
 
   const forgotPassword = async (email: string) => {
@@ -108,7 +171,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     await auth().signOut();
-    setUser(undefined);
+    dispatch({ type: 'CLEAR_USER' });
   }
 
   const updateProfilePicture = async (userId: string, filePath: string) => {
@@ -120,7 +183,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
     const url = await ref.getDownloadURL();
     await usersCollection.doc(userId).update({ profilePictureUrl: url });
-    setUser({ ...user as User, profilePictureUrl: url });
+    dispatch({ type: 'UPDATE_USER', payload: { profilePictureUrl: url } });
     setProfilePhotoUploaded(false);
   }
 
@@ -133,20 +196,20 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
     const url = await ref.getDownloadURL();
     await usersCollection.doc(userId).update({ nicImageUrl: url });
-    setUser({ ...user as User, nicImageUrl: url });
+    dispatch({ type: 'UPDATE_USER', payload: { nicImageUrl: url } });
     setNicUploaded(false);
   }
 
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: state.user,
         createUser,
         updateUser,
         login,
         forgotPassword,
         logout,
-        initializing,
+        initializing: state.initializing,
         updateProfilePicture,
         updateNicPhoto
       }}>

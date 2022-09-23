@@ -1,4 +1,4 @@
-import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, FC, useCallback, useContext, useEffect, useReducer, useState } from 'react';
 import { Vehicle } from './Vehicle.type';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
@@ -8,32 +8,87 @@ import { useAuth } from '@insureme/auth/AuthContext';
 const vehicleRef = firestore().collection('vehicles');
 const storageRef = storage();
 
-type VehicleContextType = {
+interface State {
   vehicles: Vehicle[];
+  loading: boolean;
+}
+
+const initialState: State = {
+  vehicles: [],
+  loading: false,
+}
+
+interface VehicleContextType extends State {
   addVehicle: (vehicle: Partial<Vehicle>) => Promise<void>;
   removeVehicle: (vehicleId: string) => Promise<void>;
   getVehicles: () => Promise<void>;
-  loading: boolean;
 };
 
 const VehicleContext = createContext<VehicleContextType>({
-  vehicles: [],
+  ...initialState,
   addVehicle: () => Promise.resolve(),
   removeVehicle: () => Promise.resolve(),
   getVehicles: () => Promise.resolve(),
-  loading: false
 });
 
 interface VehiclesProviderProps {
   children: React.ReactNode;
 }
 
+type ADD_VEHICLE_ACTION = {
+  type: 'ADD_VEHICLE';
+  payload: Vehicle;
+}
+
+type REMOVE_VEHICLE_ACTION = {
+  type: 'REMOVE_VEHICLE';
+  payload: string;
+}
+
+type SET_VEHICLES_ACTION = {
+  type: 'SET_VEHICLES';
+  payload: Vehicle[];
+}
+
+type VEHICLES_LOADING_ACTION = {
+  type: 'VEHICLES_LOADING';
+  payload: boolean;
+}
+
+type Action = ADD_VEHICLE_ACTION | REMOVE_VEHICLE_ACTION | SET_VEHICLES_ACTION | VEHICLES_LOADING_ACTION;
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'ADD_VEHICLE':
+      return {
+        ...state,
+        vehicles: [...state.vehicles, action.payload],
+      }
+    case 'REMOVE_VEHICLE':
+      return {
+        ...state,
+        vehicles: state.vehicles.filter(vehicle => vehicle.chassisNumber !== action.payload),
+      }
+    case 'SET_VEHICLES':
+      return {
+        ...state,
+        vehicles: action.payload,
+      }
+    case 'VEHICLES_LOADING':
+      return {
+        ...state,
+        loading: action.payload,
+      }
+    default:
+      return state;
+  }
+}
+
 export const VehiclesProvider: FC<VehiclesProviderProps> = ({ children }) => {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [tempUrlVehicleImage, setTempUrlVehicleImage] = useState<string>('');
   const toast = useToast();
   const { user } = useAuth();
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const addVehicle = async (partialVehicle: Partial<Vehicle>): Promise<void> => {
     const timestamp = firestore.Timestamp.fromDate(new Date()).toMillis();
@@ -54,14 +109,13 @@ export const VehiclesProvider: FC<VehiclesProviderProps> = ({ children }) => {
     }
     await vehicleRef.doc(newVehicle.chassisNumber).set({ ...newVehicle, pictureUrl: url });
     setTempUrlVehicleImage('');
-    setVehicles([...vehicles, newVehicle]);
+    dispatch({ type: 'ADD_VEHICLE', payload: newVehicle });
   };
 
   const removeVehicle = async (chassisNumber: string) => {
     try {
       await vehicleRef.doc(chassisNumber).delete();
-      const updatedVehicles = vehicles.filter(vehicle => vehicle.chassisNumber !== chassisNumber);
-      setVehicles(updatedVehicles);
+      dispatch({ type: 'REMOVE_VEHICLE', payload: chassisNumber });
       toast.show('Vehicle deleted successfully', { type: 'success' });
     } catch (err) {
       toast.show('Error removing vehicle', { type: 'danger' });
@@ -73,18 +127,17 @@ export const VehiclesProvider: FC<VehiclesProviderProps> = ({ children }) => {
    */
   const getVehicles = useCallback(async () => {
     try {
-      setLoading(true);
+      dispatch({ type: 'SET_VEHICLES', payload: [] });
+      dispatch({ type: 'VEHICLES_LOADING', payload: true });
       const snapshot = await vehicleRef.where('owner', '==', user?.id).get();
-      if (snapshot.empty) {
-        setVehicles([]);
-      } else {
+      if (!snapshot.empty) {
         const parsedVehicles = snapshot.docs.map((doc) => doc.data() as Vehicle);
-        setVehicles(parsedVehicles);
+        dispatch({ type: 'SET_VEHICLES', payload: parsedVehicles });
       }
     } catch (err) {
       toast.show('Error getting vehicles', { type: 'danger' });
     } finally {
-      setLoading(false);
+      dispatch({ type: 'VEHICLES_LOADING', payload: false });
     }
   }, []);
 
@@ -96,11 +149,11 @@ export const VehiclesProvider: FC<VehiclesProviderProps> = ({ children }) => {
   return (
     <VehicleContext.Provider
       value={{
-        vehicles,
+        vehicles: state.vehicles,
         addVehicle,
         removeVehicle,
         getVehicles,
-        loading
+        loading: state.loading,
       }}>
       {children}
     </VehicleContext.Provider>
