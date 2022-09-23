@@ -61,7 +61,7 @@ export const ProfileItemEditScreen: FC<ProfileItemEditScreenProps> = (props) => 
 
   return (
     <View style={[globalStyles.container, { justifyContent: 'center', alignContent: 'center', position: 'relative', backgroundColor: useTheme().colors.background }]}>
-      <View style={[styles.container,]}>
+      <View style={[styles.container]}>
         <OutlinedTextInput
           label={routeName}
           value={formik.values.value}
