@@ -73,12 +73,7 @@ const LoginScreen: FC<LoginScreenProps> = ({ navigation }) => {
       try {
         await login(email, password)
       } catch (err) {
-        const parsedErr = err as any;
-        if (parsedErr.message.startsWith('[auth/]')) {
-          toast.show('Invalid Email Address or Password', { type: 'danger' });
-          return;
-        }
-        toast.show('An unknown error occured. Please try again', { type: 'danger' });
+        toast.show('Invalid Email Address or Password', { type: 'danger' });
       }
     }
   })
