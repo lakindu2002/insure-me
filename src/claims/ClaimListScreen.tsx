@@ -2,7 +2,7 @@ import { useAuth } from '@insureme/auth/AuthContext';
 import { UserRole } from '@insureme/auth/User.type';
 import { FloatingActionButton } from '@insureme/common/FloatingActionButton';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { FC, useLayoutEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Animated, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { SceneMap, TabView } from 'react-native-tab-view';
@@ -45,9 +45,17 @@ const tabs = [
 export const ClaimListScreen: FC<ClaimListScreenProps> = ({ navigation }) => {
   const { user } = useAuth();
   const layout = useWindowDimensions();
-  const { updateSelectedClaimStatus } = useClaims();
+  const { updateSelectedClaimStatus, getClaimVehicles } = useClaims();
   const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
   const theme = useTheme();
+
+  useEffect(() => {
+    const loadClaimVehicles = () => {
+      getClaimVehicles();
+    };
+    loadClaimVehicles();
+  }, []);
+
 
   const stylesheet = useMemo(() => StyleSheet.create({
     tabItem: {
