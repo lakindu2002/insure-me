@@ -12,8 +12,8 @@ interface ClaimCardProps {
 
 export const ClaimCard: FC<ClaimCardProps> = React.memo((props) => {
   const { claim, onMoreDetailsPress } = props;
-  const { accidentType, vehicle, time, user } = claim;
-  const { name, phone } = user;
+  const { accidentType, vehicle, time, owner } = claim;
+  const { name, phone } = owner;
   const theme = useTheme();
 
   const accidentTypeName = getAccidentTypeName(accidentType, 'Accident');
