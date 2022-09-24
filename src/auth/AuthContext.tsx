@@ -5,6 +5,8 @@ import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { Appearance } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { wrapFirebasePromise } from '@insureme/common/FirebasePromiseWrap';
+import { useIsConnected } from 'react-native-offline';
 
 const usersCollection = firestore().collection('users');
 
@@ -28,7 +30,7 @@ interface AuthContextType extends State {
   forgotPassword: (email: string) => Promise<void>;
   updateNicPhoto: (userId: string, filePath: string) => Promise<void>;
   logout: () => Promise<void>;
-};
+}
 
 const AuthContext = createContext<AuthContextType>({
   ...initialState,
@@ -97,14 +99,15 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-const loadUserInformationById = async (userId: string) => {
-  return await usersCollection.doc(userId).get({ source: 'default' });
+const loadUserInformationById = (userId: string) => {
+  return usersCollection.doc(userId).get({ source: 'default' });
 }
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [profilePhotoUploaded, setProfilePhotoUploaded] = useState<boolean>(false);
   const [nicUploaded, setNicUploaded] = useState<boolean>(false);
   const [state, dispatch] = useReducer(reducer, initialState);
+  const isConnected = useIsConnected();
 
   useEffect(() => {
     const loadMode = async () => {
@@ -151,7 +154,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     if (patchAttr.preferredMode) {
       await AsyncStorage.setItem(darkModeLocalKey, patchAttr.preferredMode === 'dark' ? 'true' : 'false');
     }
-    await usersCollection.doc(userId).update({ ...patchAttr });
+    await wrapFirebasePromise(usersCollection.doc(userId).update({ ...patchAttr }), isConnected);
     dispatch({ type: 'UPDATE_USER', payload: patchAttr });
   };
 
@@ -171,6 +174,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   }
 
   const logout = async () => {
+    await firestore().clearPersistence();
     await auth().signOut();
     dispatch({ type: 'CLEAR_USER' });
   }

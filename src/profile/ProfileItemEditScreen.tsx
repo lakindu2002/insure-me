@@ -49,7 +49,8 @@ export const ProfileItemEditScreen: FC<ProfileItemEditScreenProps> = (props) => 
         toast.show('Profile updated successfully', { type: 'success' });
         navigation.goBack();
       } catch (err) {
-        toast.show('We ran into an error while updating your profile information. Please try again', { type: 'success' });
+        console.log(err);
+        toast.show('We ran into an error while updating your profile information. Please try again', { type: 'danger' });
       }
     },
     validationSchema: Yup.object({

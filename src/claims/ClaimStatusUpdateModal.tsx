@@ -69,7 +69,6 @@ export const ClaimStatusUpdateModal: FC<ClaimStatusUpdateModalProps> = (props) =
     setUpdating(false);
     if (updated) {
       onClose();
-      return;
     }
   }
 

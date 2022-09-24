@@ -10,7 +10,7 @@ import { useCamera } from '@insureme/common/UseCamera';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Divider, IconButton, Provider, Text, useTheme } from 'react-native-paper';
+import { Divider, HelperText, IconButton, Provider, Text, useTheme } from 'react-native-paper';
 import { useToast } from 'react-native-toast-notifications';
 import { AccidentType, Claim } from './Claim.type';
 import { ClaimNavigatorParamList } from './ClaimNavigator';
@@ -338,6 +338,14 @@ export const ClaimNewScreen: FC<ClaimNewScreenProps> = ({ navigation }) => {
                           icon={'camera'}
                         />
                       </View>
+                      {step02ValidationErrors.length > 0 && (
+                        <HelperText
+                          type='error'
+                          visible={step02ValidationErrors.length > 0}
+                        >
+                          {step02ValidationErrors[0].message}
+                        </HelperText>
+                      )}
                       <Divider style={{ marginVertical: 20 }} />
                     </>
                   )

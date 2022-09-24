@@ -3,7 +3,7 @@ import { useAuth } from '@insureme/auth/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FC } from 'react';
-import { Button, IconButton, useTheme } from 'react-native-paper';
+import { IconButton, useTheme } from 'react-native-paper';
 import { ProfileItemEditScreen } from './ProfileItemEditScreen';
 import { ProfileScreen } from './ProfileScreen';
 

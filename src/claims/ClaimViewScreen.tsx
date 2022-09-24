@@ -23,7 +23,7 @@ interface ClaimViewScreenProps extends ClaimViewScreenNavigationProp { }
 export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation }) => {
   const { params } = route;
   const { claimId } = params;
-  const { getClaimById, claimLoading, claim, assignClaimToLoggedInUser, deleteClaim, updateClaim } = useClaims();
+  const { getClaimById, claimLoading, claim, assignClaimToLoggedInUser, deleteClaim } = useClaims();
   const sheet = useActionSheet();
   const { user } = useAuth();
   const theme = useTheme();
@@ -54,13 +54,6 @@ export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation })
   const launchUpdateStatusWizard = useCallback(() => {
     setOpenStatsUpdateModal(true);
   }, []);
-
-  const handleUpdateClaimStatus = useCallback(async (status: ClaimStatus) => {
-    if (!claim?.id) {
-      return;
-    }
-    await updateClaim(claim.id, { status });
-  }, [claim?.id]);
 
   const handleLaunchClaimOptions = useCallback(() => {
     let options = [];

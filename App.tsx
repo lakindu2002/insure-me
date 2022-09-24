@@ -33,7 +33,7 @@ const darkTheme = {
 const FirestoreWrapper: FC<{ children: JSX.Element }> = ({ children }) => {
   useEffect(() => {
     const enablePersistence = async () => {
-      await storage().settings({ persistence: true });
+      await storage().settings({ persistence: true, ignoreUndefinedProperties: true });
     }
     enablePersistence();
   }, []);

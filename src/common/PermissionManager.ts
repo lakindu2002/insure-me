@@ -6,7 +6,6 @@ import {
   Permission,
   checkMultiple,
   RESULTS,
-  openSettings
 } from 'react-native-permissions';
 
 export const Permissions = PERMISSIONS;

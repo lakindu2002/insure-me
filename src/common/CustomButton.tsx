@@ -15,7 +15,7 @@ interface CustomButtonProps {
 }
 
 export const CustomButton: FC<CustomButtonProps> = (props) => {
-  const { label, loading, color, labelStyle } = props;
+  const { label, loading, color } = props;
   const theme = useTheme();
   return (
     <Button {...props}
