@@ -1,4 +1,4 @@
-import { FC, useEffect, useLayoutEffect, useState } from 'react';
+import { FC, useLayoutEffect, useState } from 'react';
 import { useAuth } from '@insureme/auth/AuthContext';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { globalStyles } from '@insureme/common/GlobalStyles';

@@ -1,5 +1,3 @@
-import { Vehicle } from '@insureme/vehicles/Vehicle.type';
-
 export enum AccidentType {
   REAR = 'rear',
   HEAD_ON = 'head-on',

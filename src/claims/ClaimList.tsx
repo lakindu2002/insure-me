@@ -1,11 +1,9 @@
 import { Alert } from '@insureme/common/Alert';
 import { Loader } from '@insureme/common/Loader';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { FC, Fragment } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { ClaimCard } from './ClaimCard';
-import { ClaimNavigatorParamList } from './ClaimNavigator';
 import { useClaims } from './ClaimsContext';
 
 const stylesheet = StyleSheet.create({

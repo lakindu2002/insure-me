@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Dialog, Modal, Portal, Provider, RadioButton, Text, TextInput, useTheme } from 'react-native-paper';
+import { Dialog, Portal, RadioButton, Text, TextInput } from 'react-native-paper';
 import { OutlinedTextInput } from './OutlinedTextInput';
 
 interface DropdownMenuProps {

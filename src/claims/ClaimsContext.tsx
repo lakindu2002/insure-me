@@ -1,4 +1,4 @@
-import React, { createContext, FC, useCallback, useContext, useEffect, useReducer, useState } from 'react';
+import React, { createContext, FC, useCallback, useContext, useEffect, useReducer } from 'react';
 import { AccidentType, Claim, ClaimStatus, ClaimVehicle } from './Claim.type';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
@@ -6,6 +6,8 @@ import { useAuth } from '@insureme/auth/AuthContext';
 import { UserRole } from '@insureme/auth/User.type';
 import { useToast } from 'react-native-toast-notifications';
 import { getAccidentTypeName, getClaimStatusName } from './Claim.util';
+import { wrapFirebasePromise } from '@insureme/common/FirebasePromiseWrap';
+import { useIsConnected } from 'react-native-offline';
 
 const claimRef = firestore().collection('claims');
 const vehicleRef = firestore().collection('vehicles');
@@ -42,7 +44,7 @@ interface ClaimsContextType extends State {
   deleteClaim: (claimId: string) => Promise<boolean>,
   assignClaimToLoggedInUser: () => Promise<boolean>,
   updateClaim: (claimId: string, claim: Partial<Claim>) => Promise<boolean>,
-};
+}
 
 const ClaimsContext = createContext<ClaimsContextType>({
   ...initialState,
@@ -202,6 +204,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const { show: showToast } = useToast();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const isConnected = useIsConnected();
 
   const updateSelectedClaimStatus = (status: ClaimStatus) => {
     dispatch({ type: 'UPDATE_SELECTED_CLAIM_STATUS', payload: status });
@@ -306,7 +309,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
         vehicle: newClaim.vehicle as ClaimVehicle,
         date: newClaim.date as number,
       }
-      await claimRef.doc(claimId).set(claim);
+      await wrapFirebasePromise(claimRef.doc(claimId).set(claim), isConnected);
       dispatch({ type: 'ADD_CLAIM', payload: claim });
       return true;
     } catch (err) {
@@ -335,7 +338,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
 
   const deleteClaim = useCallback(async (id: string) => {
     try {
-      await claimRef.doc(id).delete();
+      await wrapFirebasePromise(claimRef.doc(id).delete(), isConnected);
       dispatch({ type: 'DELETE_CLAIM', payload: id });
       return true;
     } catch (err) {
@@ -359,7 +362,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
       status: ClaimStatus.PROCESSING
     };
     try {
-      await claimRef.doc(claimId).update(patchAttr);
+      await wrapFirebasePromise(claimRef.doc(claimId).update(patchAttr), isConnected);
       showToast(`This claim was assigned to you, and has been moved to ${getClaimStatusName(ClaimStatus.PROCESSING)}`, { type: 'success' });
       dispatch({ type: 'UPDATE_CLAIM', payload: { claim: patchAttr, claimId } });
       return true;
@@ -371,7 +374,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
 
   const updateClaim = useCallback(async (claimId: string, patchAttr: Partial<Claim>) => {
     try {
-      await claimRef.doc(claimId).update(patchAttr);
+      await wrapFirebasePromise(claimRef.doc(claimId).update(patchAttr), isConnected);
       dispatch({ type: 'UPDATE_CLAIM', payload: { claim: patchAttr, claimId } });
       showToast('Claim information has been updated successfully', { type: 'success' });
       return true;

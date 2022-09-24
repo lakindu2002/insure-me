@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Animated, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { SceneMap, TabView } from 'react-native-tab-view';
+import { TabView } from 'react-native-tab-view';
 import { ClaimStatus } from './Claim.type';
 import { getClaimStatusName } from './Claim.util';
 import { ClaimList } from './ClaimList';
@@ -97,9 +97,9 @@ export const ClaimListScreen: FC<ClaimListScreenProps> = ({ navigation }) => {
         }}
         renderScene={({ route }) => {
           switch (route.key) {
-            case ClaimStatus.PENDING: return <ClaimList onItemClick={handleClaimClick} />
-            case ClaimStatus.APPROVED: return <ClaimList onItemClick={handleClaimClick} />
-            case ClaimStatus.PROCESSING: return <ClaimList onItemClick={handleClaimClick} />
+            case ClaimStatus.PENDING:
+            case ClaimStatus.APPROVED:
+            case ClaimStatus.PROCESSING:
             case ClaimStatus.REJECTED: return <ClaimList onItemClick={handleClaimClick} />
           }
         }

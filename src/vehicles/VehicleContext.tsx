@@ -1,9 +1,11 @@
-import { createContext, FC, useCallback, useContext, useEffect, useReducer, useState } from 'react';
+import { createContext, FC, useCallback, useContext, useReducer, useState } from 'react';
 import { Vehicle } from './Vehicle.type';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useToast } from 'react-native-toast-notifications';
 import { useAuth } from '@insureme/auth/AuthContext';
+import { wrapFirebasePromise } from '@insureme/common/FirebasePromiseWrap';
+import { useIsConnected } from 'react-native-offline';
 
 const vehicleRef = firestore().collection('vehicles');
 const storageRef = storage();
@@ -22,7 +24,7 @@ interface VehicleContextType extends State {
   addVehicle: (vehicle: Partial<Vehicle>) => Promise<void>;
   removeVehicle: (vehicleId: string) => Promise<void>;
   getVehicles: () => Promise<void>;
-};
+}
 
 const VehicleContext = createContext<VehicleContextType>({
   ...initialState,
@@ -85,6 +87,7 @@ const reducer = (state: State, action: Action): State => {
 }
 
 export const VehiclesProvider: FC<VehiclesProviderProps> = ({ children }) => {
+  const isConnected = useIsConnected();
   const [tempUrlVehicleImage, setTempUrlVehicleImage] = useState<string>('');
   const toast = useToast();
   const { user } = useAuth();
@@ -114,7 +117,7 @@ export const VehiclesProvider: FC<VehiclesProviderProps> = ({ children }) => {
 
   const removeVehicle = async (chassisNumber: string) => {
     try {
-      await vehicleRef.doc(chassisNumber).delete();
+      await wrapFirebasePromise(vehicleRef.doc(chassisNumber).delete(), isConnected);
       dispatch({ type: 'REMOVE_VEHICLE', payload: chassisNumber });
       toast.show('Vehicle deleted successfully', { type: 'success' });
     } catch (err) {
