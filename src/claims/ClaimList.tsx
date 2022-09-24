@@ -1,7 +1,7 @@
 import { Alert } from '@insureme/common/Alert';
 import { Loader } from '@insureme/common/Loader';
 import React, { FC, Fragment } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { ClaimCard } from './ClaimCard';
 import { useClaims } from './ClaimsContext';
@@ -37,11 +37,15 @@ export const ClaimList: FC = React.memo((props) => {
             />
           )}
           {claims.map((claim) => (
-            <ClaimCard
+            <View
               key={claim.id}
-              claim={claim}
-              onMoreDetailsPress={handleClaimDetailsClick(claim.id)}
-            />
+              style={{ marginBottom: 10 }}
+            >
+              <ClaimCard
+                claim={claim}
+                onMoreDetailsPress={handleClaimDetailsClick(claim.id)}
+              />
+            </View>
           ))}
         </Fragment>
       )}
