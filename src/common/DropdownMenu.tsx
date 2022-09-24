@@ -9,9 +9,11 @@ interface DropdownMenuProps {
   selected: { label: string, value: string } | undefined;
   label: string;
   disabled?: boolean;
+  helperText?: string;
+  error?: boolean;
 }
 
-export const DropdownMenu: FC<DropdownMenuProps> = ({ items, onSelect, selected, label, disabled = false }) => {
+export const DropdownMenu: FC<DropdownMenuProps> = ({ items, onSelect, selected, label, disabled = false, error, helperText }) => {
   const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<string>('');
 
@@ -32,6 +34,8 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({ items, onSelect, selected,
         value={selected?.label}
         editable={false}
         label={label}
+        error={error}
+        helperText={helperText}
         onPressIn={() => setDropdownVisible(true)}
         right={
           <TextInput.Icon icon='chevron-down'
