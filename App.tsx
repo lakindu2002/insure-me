@@ -6,6 +6,8 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import RootNavigator from '@insureme/common/RootNavigator';
 import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 import storage from '@react-native-firebase/firestore';
+import { NetworkProvider } from 'react-native-offline';
+
 
 
 const baseTheme = {
@@ -41,26 +43,28 @@ const FirestoreWrapper: FC<{ children: JSX.Element }> = ({ children }) => {
 
 const App: FC = () => {
   return (
-    <FirestoreWrapper>
-      <ActionSheetProvider>
-        <AuthProvider>
-          <AuthConsumer>
-            {({ user }) => (
-              <ThemeProvider
-                theme={user?.preferredMode === 'dark' ? darkTheme : lightTheme}
-              >
-                <ToastProvider>
-                  <NavigationContainer>
-                    <RootNavigator />
-                  </NavigationContainer>
-                </ToastProvider>
-              </ThemeProvider>
-            )}
+    <NetworkProvider>
+      <FirestoreWrapper>
+        <ActionSheetProvider>
+          <AuthProvider>
+            <AuthConsumer>
+              {({ user }) => (
+                <ThemeProvider
+                  theme={user?.preferredMode === 'dark' ? darkTheme : lightTheme}
+                >
+                  <ToastProvider>
+                    <NavigationContainer>
+                      <RootNavigator />
+                    </NavigationContainer>
+                  </ToastProvider>
+                </ThemeProvider>
+              )}
 
-          </AuthConsumer>
-        </AuthProvider >
-      </ActionSheetProvider>
-    </FirestoreWrapper>
+            </AuthConsumer>
+          </AuthProvider >
+        </ActionSheetProvider>
+      </FirestoreWrapper>
+    </NetworkProvider>
   );
 };
 
