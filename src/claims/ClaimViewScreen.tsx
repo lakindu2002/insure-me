@@ -4,12 +4,13 @@ import { UserRole } from '@insureme/auth/User.type';
 import { globalStyles } from '@insureme/common/GlobalStyles';
 import { Loader } from '@insureme/common/Loader';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { FC, useCallback, useEffect } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { IconButton, useTheme } from 'react-native-paper';
 import { ClaimStatus } from './Claim.type';
 import { ClaimNavigatorParamList } from './ClaimNavigator';
 import { useClaims } from './ClaimsContext';
+import { ClaimStatusUpdateModal } from './ClaimStatusUpdateModal';
 
 type ClaimViewScreenNavigationProp = NativeStackScreenProps<ClaimNavigatorParamList, 'ClaimDetail'>;
 
@@ -18,10 +19,11 @@ interface ClaimViewScreenProps extends ClaimViewScreenNavigationProp { }
 export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation }) => {
   const { params } = route;
   const { claimId } = params;
-  const { getClaimById, claimLoading, claim, assignClaimToLoggedInUser, deleteClaim } = useClaims();
+  const { getClaimById, claimLoading, claim, assignClaimToLoggedInUser, deleteClaim, updateClaim } = useClaims();
   const sheet = useActionSheet();
   const { user } = useAuth();
   const theme = useTheme();
+  const [openStatsUpdateModal, setOpenStatsUpdateModal] = useState(false);
 
   const launchDeleteConfirmation = useCallback(() => {
     if (!claim?.id) {
@@ -46,8 +48,15 @@ export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation })
   }, [])
 
   const launchUpdateStatusWizard = useCallback(() => {
-
+    setOpenStatsUpdateModal(true);
   }, []);
+
+  const handleUpdateClaimStatus = useCallback(async (status: ClaimStatus) => {
+    if (!claim?.id) {
+      return;
+    }
+    await updateClaim(claim.id, { status });
+  }, [claim?.id]);
 
   const handleLaunchClaimOptions = useCallback(() => {
     let options = [];
@@ -89,21 +98,23 @@ export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation })
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: (props) => (
-        <IconButton
-          onPress={handleLaunchClaimOptions}
-          icon={'dots-vertical'}
-        />
-      )
+      ...claim?.id && {
+        headerRight: (props) => (
+          <IconButton
+            onPress={handleLaunchClaimOptions}
+            icon={'dots-vertical'}
+          />
+        )
+      }
     })
-  }, [handleLaunchClaimOptions])
+  }, [handleLaunchClaimOptions, claim?.id])
 
   useEffect(() => {
     getClaimById(claimId);
   }, [claimId]);
 
   return (
-    <ScrollView style={globalStyles.container}>
+    <ScrollView style={{ ...globalStyles.container, backgroundColor: theme.colors.background }}>
       <View
         style={{ padding: 20 }}
       >
@@ -114,6 +125,12 @@ export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation })
           </View>
         )}
       </View>
+      {openStatsUpdateModal && claim && (
+        <ClaimStatusUpdateModal
+          onClose={() => setOpenStatsUpdateModal(false)}
+          open={openStatsUpdateModal}
+        />
+      )}
     </ScrollView>
   );
 };

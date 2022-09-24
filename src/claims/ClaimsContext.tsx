@@ -41,6 +41,7 @@ interface ClaimsContextType extends State {
   getClaimById: (claimId: string) => Promise<void>,
   deleteClaim: (claimId: string) => Promise<boolean>,
   assignClaimToLoggedInUser: () => Promise<boolean>,
+  updateClaim: (claimId: string, claim: Partial<Claim>) => Promise<boolean>,
 };
 
 const ClaimsContext = createContext<ClaimsContextType>({
@@ -52,6 +53,7 @@ const ClaimsContext = createContext<ClaimsContextType>({
   getClaimById: () => Promise.resolve(undefined),
   deleteClaim: () => Promise.resolve(true),
   assignClaimToLoggedInUser: () => Promise.resolve(true),
+  updateClaim: () => Promise.resolve(true),
 });
 
 interface ClaimsProviderProps {
@@ -366,6 +368,18 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
     }
   }, [state.claim?.id, user?.id]);
 
+  const updateClaim = useCallback(async (claimId: string, patchAttr: Partial<Claim>) => {
+    try {
+      await claimRef.doc(claimId).update(patchAttr);
+      dispatch({ type: 'UPDATE_CLAIM', payload: { claim: patchAttr, claimId } });
+      showToast('Claim information has been updated successfully', { type: 'success' });
+      return true;
+    } catch (err) {
+      showToast('Error updating claim', { type: 'danger' });
+      return false;
+    }
+  }, []);
+
   return (
     <ClaimsContext.Provider value={{
       claims: state.claims,
@@ -382,7 +396,8 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
       claimLoading: state.claimLoading,
       getClaimById,
       deleteClaim,
-      assignClaimToLoggedInUser
+      assignClaimToLoggedInUser,
+      updateClaim
     }}>
       {children}
     </ClaimsContext.Provider>

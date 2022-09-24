@@ -47,4 +47,5 @@ export type Claim = {
   approvedAmount?: number;
   location: string;
   pictures: string[];
+  approvedCurrency?: string;
 };
