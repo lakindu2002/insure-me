@@ -82,6 +82,7 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         user: undefined,
+        initializing: false,
       }
     case 'INITIALIZING_USER':
       return {
