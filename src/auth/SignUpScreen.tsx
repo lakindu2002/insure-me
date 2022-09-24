@@ -3,7 +3,7 @@ import { AppLogo } from '@insureme/common/AppLogo';
 import { CustomButton } from '@insureme/common/CustomButton';
 import { globalStyles } from '@insureme/common/GlobalStyles';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   Caption,
@@ -41,7 +41,7 @@ interface SignUpScreenProps extends SignUpNavigatorProps { }
 
 const SignUpScreen: FC<SignUpScreenProps> = ({ navigation }) => {
   const theme = useTheme();
-  const { createUser } = useAuth();
+  const { createUser, user } = useAuth();
   const toast = useToast();
 
   const formik = useFormik({
@@ -71,6 +71,15 @@ const SignUpScreen: FC<SignUpScreenProps> = ({ navigation }) => {
       }
     }
   });
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    if (user) {
+      navigation.navigate('Customer');
+    }
+  }, [user]);
 
   const onLoginPressed = () => {
     navigation.navigate('Login');

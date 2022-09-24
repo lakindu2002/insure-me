@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Caption, Divider, Headline, TextInput, useTheme } from 'react-native-paper';
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
@@ -12,6 +12,7 @@ import { useAuth } from './AuthContext';
 import { useToast } from 'react-native-toast-notifications';
 import { RootStackNavigatorParamList } from '@insureme/common/RootNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { UserRole } from './User.type';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -40,8 +41,21 @@ interface LoginScreenProps extends LoginScreenNavigatorProps {
 const LoginScreen: FC<LoginScreenProps> = ({ navigation }) => {
   const [toggleSecureEntry, setToggleSecureEntry] = useState<boolean>(true);
   const [openForgetPasswordModal, setOpenForgetPasswordModal] = useState<boolean>(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const toast = useToast();
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    if (user.role === UserRole.CUSTOMER) {
+      navigation.navigate('Customer');
+      return;
+    }
+    if (user.role === UserRole.CLAIM_ADJUSTER) {
+      navigation.navigate('ClaimAdjuster');
+    }
+  }, [user]);
 
   const validationSchema = Yup.object({
     email: Yup.string().email('Email address poorly formatted').required('Email is Required'),
