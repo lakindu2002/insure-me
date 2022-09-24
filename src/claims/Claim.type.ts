@@ -38,6 +38,10 @@ export type Claim = {
     nic: string;
     phone: string;
   }
+  managerId?: string;
+  manager?: {
+    name: string;
+  }
   expectedCurrency: string;
   expectedAmount: number;
   approvedAmount?: number;
