@@ -135,6 +135,7 @@ export const VehiclesProvider: FC<VehiclesProviderProps> = ({ children }) => {
         dispatch({ type: 'SET_VEHICLES', payload: parsedVehicles });
       }
     } catch (err) {
+      console.log(err);
       toast.show('Error getting vehicles', { type: 'danger' });
     } finally {
       dispatch({ type: 'VEHICLES_LOADING', payload: false });

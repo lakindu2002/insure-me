@@ -31,6 +31,7 @@ export type Claim = {
   createdAt: number;
   updatedAt: number;
   time: number;
+  date: number
   status: ClaimStatus;
   ownerId: string;
   owner: {

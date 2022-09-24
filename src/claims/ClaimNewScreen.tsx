@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
 const validateStep01 = (claim: Partial<Claim>) => {
   const validationErrors: { key: string, message: string }[] = [];
   if (!claim.accidentType) validationErrors.push({ key: 'accidentType', message: 'Accident type is required' });
+  if (!claim.date) validationErrors.push({ key: 'date', message: 'Accident date is required' });
   if (!claim.time) validationErrors.push({ key: 'time', message: 'Accident time is required' });
   if (!claim.expectedCurrency) validationErrors.push({ key: 'expectedCurrency', message: 'Expected currency is required' });
   if (!claim.expectedAmount) validationErrors.push({ key: 'expectedAmount', message: 'Expected amount is required' });
@@ -76,7 +77,7 @@ export const ClaimNewScreen: FC<ClaimNewScreenProps> = ({ navigation }) => {
   const [selectedStep, setSelectedStep] = useState<number>(0);
   const { accidentTypes, getVehicleAccidentTypes, claimVehicles, createClaim, claimCreating } = useClaims();
   const { images, launchPhotoSelection } = useCamera(5);
-  const [newClaim, setNewClaim] = useState<Partial<Claim>>({ time: Date.now() });
+  const [newClaim, setNewClaim] = useState<Partial<Claim>>({ time: Date.now(), date: Date.now() });
 
   const [step01ValidationErrors, setStep01ValidationErrors] = useState<{ key: string, message: string }[]>([]);
   const [step02ValidationErrors, setStep02ValidationErrors] = useState<{ key: string, message: string }[]>([]);
@@ -174,6 +175,11 @@ export const ClaimNewScreen: FC<ClaimNewScreenProps> = ({ navigation }) => {
     setNewClaim((claim) => ({ ...claim, time: newTimeInMs }));
   }
 
+  const handleDateChanged = (newDate: Date) => {
+    const newDateInMs = newDate.getTime();
+    setNewClaim((claim) => ({ ...claim, date: newDateInMs }));
+  }
+
   const selectedVehicle = useMemo(() => claimVehicles.find((vehicle) => vehicle.chassisNumber === newClaim.vehicle?.chassisNumber), [newClaim.vehicle?.chassisNumber]);
   return (
     <ScrollView style={{
@@ -204,6 +210,14 @@ export const ClaimNewScreen: FC<ClaimNewScreenProps> = ({ navigation }) => {
                 </View>
                 <View style={styles.marginBottom}>
                   <TimePicker
+                    initialValue={newClaim.date}
+                    mode={'date'}
+                    onDateChange={handleDateChanged}
+                  />
+                </View>
+                <View style={styles.marginBottom}>
+                  <TimePicker
+                    mode='time'
                     initialValue={newClaim.time}
                     onDateChange={handleTimeChanged}
                   />

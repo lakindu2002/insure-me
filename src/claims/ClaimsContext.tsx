@@ -304,6 +304,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
         },
         pictures: uploadedPictureUrls,
         vehicle: newClaim.vehicle as ClaimVehicle,
+        date: newClaim.date as number,
       }
       await claimRef.doc(claimId).set(claim);
       dispatch({ type: 'ADD_CLAIM', payload: claim });

@@ -1,13 +1,17 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useAuth } from '@insureme/auth/AuthContext';
 import { UserRole } from '@insureme/auth/User.type';
+import { Carousel } from '@insureme/common/Carousel';
 import { globalStyles } from '@insureme/common/GlobalStyles';
 import { Loader } from '@insureme/common/Loader';
+import { ReadOnlyField } from '@insureme/common/ReadOnlyField';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import moment from 'moment';
+import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import { IconButton, useTheme } from 'react-native-paper';
+import { Divider, IconButton, List, useTheme } from 'react-native-paper';
 import { ClaimStatus } from './Claim.type';
+import { getAccidentTypeName, getClaimStatusName } from './Claim.util';
 import { ClaimNavigatorParamList } from './ClaimNavigator';
 import { useClaims } from './ClaimsContext';
 import { ClaimStatusUpdateModal } from './ClaimStatusUpdateModal';
@@ -121,8 +125,74 @@ export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation })
         {claimLoading ? (
           <Loader />
         ) : (
-          <View>
-          </View>
+          <Fragment>
+            {claim && (
+              <View>
+                <Carousel
+                  data={claim?.pictures || []}
+                  type='image'
+                />
+                <View style={{ marginTop: 30 }}>
+                  <List.Accordion
+                    title='Accident Information'
+                  >
+                    <ReadOnlyField
+                      label='Accident Type'
+                      content={getAccidentTypeName(claim.accidentType)}
+                    />
+                    <ReadOnlyField
+                      label='Accident Date'
+                      content={moment(claim.date).format('Do MMMM/YYYY')}
+                    />
+                    <ReadOnlyField
+                      label='Accident Time'
+                      content={moment(claim.time).format('HH : mm a')}
+                    />
+                    <ReadOnlyField
+                      label='Accident Location'
+                      content={claim.location}
+                    />
+                  </List.Accordion>
+                  <Divider style={{ marginVertical: 20 }} />
+                  <List.Accordion
+                    title='Vehicle Information'
+                  >
+                    <ReadOnlyField
+                      label='Vehicle'
+                      content={`${claim.vehicle.brand} ${claim.vehicle.model}`}
+                    />
+                  </List.Accordion>
+                  <Divider style={{ marginVertical: 20 }} />
+                  <List.Accordion
+                    title='Claim Information'
+                  >
+                    {claim.managerId && (
+                      <ReadOnlyField
+                        label='Managed By'
+                        content={claim.manager?.name || ''}
+                      />
+                    )}
+                    <ReadOnlyField
+                      label='Status'
+                      content={`${getClaimStatusName(claim.status)}`}
+                    />
+                    <ReadOnlyField
+                      label='Expected Amount'
+                      content={`${claim.expectedCurrency} ${claim.expectedAmount}`}
+                    />
+                    {claim.approvedAmount && (
+                      <ReadOnlyField
+                        label='Approved Amount'
+                        content={`${claim.approvedCurrency} ${claim.approvedAmount}`}
+                      />
+                    )}
+
+                  </List.Accordion>
+                </View>
+              </View>
+            )}
+          </Fragment>
+
         )}
       </View>
       {openStatsUpdateModal && claim && (

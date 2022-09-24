@@ -2,12 +2,13 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { FC, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, useTheme } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { OutlinedTextInput } from './OutlinedTextInput';
 
 interface TimePickerProps {
   initialValue?: number;
   onDateChange: (date: Date) => void;
+  mode: 'time' | 'date'
 }
 
 const styles = StyleSheet.create({
@@ -19,17 +20,15 @@ const styles = StyleSheet.create({
   }
 })
 
-export const TimePicker: FC<TimePickerProps> = ({ initialValue = Date.now(), onDateChange }) => {
-  const theme = useTheme();
+export const TimePicker: FC<TimePickerProps> = ({ initialValue = Date.now(), onDateChange, mode }) => {
   const launchTimePicker = useCallback(() => {
     DateTimePickerAndroid.open({
-      mode: 'time',
+      mode,
       value: new Date(initialValue),
       is24Hour: true,
       onChange: (_event, date) => {
         onDateChange(date as Date);
       },
-
     })
   }, []);
 
@@ -45,13 +44,13 @@ export const TimePicker: FC<TimePickerProps> = ({ initialValue = Date.now(), onD
           height: 50,
         }}
         editable={false}
-        value={moment(initialValue).format('HH:mm')}
+        value={moment(initialValue).format(mode === 'time' ? 'HH:mm' : 'Do MMMM YYYY')}
       />
       <Button
         mode='contained'
         onPress={launchTimePicker}
       >
-        Select Time
+        Select {mode === 'date' ? 'Date' : 'Time'}
       </Button>
     </View>
   );
