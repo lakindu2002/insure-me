@@ -4,6 +4,7 @@ import { useTheme } from 'react-native-paper';
 import { ClaimListScreen } from './ClaimListScreen';
 import { ClaimNewScreen } from './ClaimNewScreen';
 import { ClaimsProvider } from './ClaimsContext';
+import { ClaimViewScreen } from './ClaimViewScreen';
 
 export type ClaimNavigatorParamList = {
   ClaimList: undefined;
@@ -25,7 +26,7 @@ const ClaimNavigator: FC = () => {
           },
           headerTitleStyle: {
             color: theme.colors.text
-          }
+          },
         }}
         initialRouteName='ClaimList'
       >
@@ -41,6 +42,13 @@ const ClaimNavigator: FC = () => {
           component={ClaimNewScreen}
           options={{
             headerTitle: 'Submit New Claim',
+          }}
+        />
+        <ClaimNavigatorStack.Screen
+          name="ClaimDetail"
+          component={ClaimViewScreen}
+          options={{
+            headerTitle: 'Manage Claim',
           }}
         />
       </ClaimNavigatorStack.Navigator>

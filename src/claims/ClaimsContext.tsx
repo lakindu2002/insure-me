@@ -5,7 +5,7 @@ import storage from '@react-native-firebase/storage';
 import { useAuth } from '@insureme/auth/AuthContext';
 import { UserRole } from '@insureme/auth/User.type';
 import { useToast } from 'react-native-toast-notifications';
-import { getAccidentTypeName } from './Claim.util';
+import { getAccidentTypeName, getClaimStatusName } from './Claim.util';
 
 const claimRef = firestore().collection('claims');
 const vehicleRef = firestore().collection('vehicles');
@@ -18,6 +18,8 @@ interface State {
   accidentTypes: { label: string, value: string }[]
   claimVehicles: ClaimVehicle[]
   claimCreating: boolean
+  claim: Claim | undefined;
+  claimLoading: boolean;
 }
 
 const initialState: State = {
@@ -26,14 +28,19 @@ const initialState: State = {
   claimsLoading: false,
   accidentTypes: [],
   claimVehicles: [],
-  claimCreating: false
+  claimCreating: false,
+  claim: undefined,
+  claimLoading: false,
 }
 
 interface ClaimsContextType extends State {
   updateSelectedClaimStatus: (status: ClaimStatus) => void;
   getVehicleAccidentTypes: () => void
   getClaimVehicles: () => Promise<void>,
-  createClaim: (newClaim: Partial<Claim>) => Promise<boolean>
+  createClaim: (newClaim: Partial<Claim>) => Promise<boolean>,
+  getClaimById: (claimId: string) => Promise<void>,
+  deleteClaim: (claimId: string) => Promise<boolean>,
+  assignClaimToLoggedInUser: () => Promise<boolean>,
 };
 
 const ClaimsContext = createContext<ClaimsContextType>({
@@ -41,7 +48,10 @@ const ClaimsContext = createContext<ClaimsContextType>({
   updateSelectedClaimStatus: () => { },
   getVehicleAccidentTypes: () => { },
   getClaimVehicles: () => Promise.resolve(),
-  createClaim: () => Promise.resolve(true)
+  createClaim: () => Promise.resolve(true),
+  getClaimById: () => Promise.resolve(undefined),
+  deleteClaim: () => Promise.resolve(true),
+  assignClaimToLoggedInUser: () => Promise.resolve(true),
 });
 
 interface ClaimsProviderProps {
@@ -83,7 +93,30 @@ type SET_CLAIM_CREATING_ACTION = {
   payload: boolean;
 }
 
-type Action = UPDATE_SELECTED_CLAIM_STATUS_ACTION | UPDATE_LOADING_CLAIMS_ACTION | SET_CLAIMS_ACTION | SET_VEHICLE_ACCIDENT_TYPES_ACTION | SET_CLAIM_VEHICLES | ADD_CLAIM | SET_CLAIM_CREATING_ACTION;
+type SET_CLAIM = {
+  type: 'SET_CLAIM';
+  payload: Claim | undefined;
+}
+
+type SET_CLAIM_LOADING = {
+  type: 'SET_CLAIM_LOADING';
+  payload: boolean;
+}
+
+type DELETE_CLAIM_ACTION = {
+  type: 'DELETE_CLAIM';
+  payload: string;
+}
+
+type UPDATE_CLAIM_ACTION = {
+  type: 'UPDATE_CLAIM';
+  payload: {
+    claim: Partial<Claim>,
+    claimId: string
+  }
+}
+
+type Action = UPDATE_SELECTED_CLAIM_STATUS_ACTION | UPDATE_LOADING_CLAIMS_ACTION | SET_CLAIMS_ACTION | SET_VEHICLE_ACCIDENT_TYPES_ACTION | SET_CLAIM_VEHICLES | ADD_CLAIM | SET_CLAIM_CREATING_ACTION | SET_CLAIM | SET_CLAIM_LOADING | DELETE_CLAIM_ACTION | UPDATE_CLAIM_ACTION;
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -122,6 +155,42 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         claimCreating: action.payload
       }
+    case 'SET_CLAIM':
+      return {
+        ...state,
+        claim: action.payload
+      }
+    case 'SET_CLAIM_LOADING':
+      return {
+        ...state,
+        claimLoading: action.payload
+      }
+    case 'DELETE_CLAIM': {
+      const claims = state.claims.filter(claim => claim.id !== action.payload);
+      return {
+        ...state,
+        claims
+      }
+    }
+    case 'UPDATE_CLAIM': {
+      const claims = state.claims.map(claim => {
+        if (claim.id === action.payload.claimId) {
+          return {
+            ...claim,
+            ...action.payload
+          }
+        }
+        return claim;
+      })
+      return {
+        ...state,
+        claims,
+        claim: {
+          ...state.claim,
+          ...action.payload.claim as Claim
+        }
+      }
+    }
     default:
       return state;
   }
@@ -245,6 +314,58 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
     }
   }, []);
 
+  const getClaimById = useCallback(async (id: string) => {
+    try {
+      dispatch({ type: 'SET_CLAIM_LOADING', payload: true });
+      dispatch({ type: 'SET_CLAIM', payload: undefined });
+      const snapshot = await claimRef.doc(id).get();
+      if (snapshot.exists) {
+        const data = snapshot.data() as Claim;
+        dispatch({ type: 'SET_CLAIM', payload: data });
+      }
+    } catch (err) {
+      showToast('Error loading claim', { type: 'danger' });
+    } finally {
+      dispatch({ type: 'SET_CLAIM_LOADING', payload: false });
+    }
+  }, []);
+
+  const deleteClaim = useCallback(async (id: string) => {
+    try {
+      await claimRef.doc(id).delete();
+      dispatch({ type: 'DELETE_CLAIM', payload: id });
+      return true;
+    } catch (err) {
+      showToast('Error deleting claim', { type: 'danger' });
+      return false;
+    }
+  }, []);
+
+  const assignClaimToLoggedInUser = useCallback(async () => {
+    if (!state.claim?.id) {
+      return false;
+    }
+    const userId = user?.id
+    const claimId = state.claim?.id;
+    const patchAttr: Partial<Claim> = {
+      managerId: userId,
+      updatedAt: firestore.Timestamp.now().toMillis(),
+      manager: {
+        name: user?.fullName || '',
+      },
+      status: ClaimStatus.PROCESSING
+    };
+    try {
+      await claimRef.doc(claimId).update(patchAttr);
+      showToast(`This claim was assigned to you, and has been moved to ${getClaimStatusName(ClaimStatus.PROCESSING)}`, { type: 'success' });
+      dispatch({ type: 'UPDATE_CLAIM', payload: { claim: patchAttr, claimId } });
+      return true;
+    } catch (err) {
+      showToast('Error assigning claim', { type: 'danger' });
+      return false;
+    }
+  }, [state.claim?.id, user?.id]);
+
   return (
     <ClaimsContext.Provider value={{
       claims: state.claims,
@@ -256,7 +377,12 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
       claimVehicles: state.claimVehicles,
       getClaimVehicles,
       claimCreating: state.claimCreating,
-      createClaim
+      createClaim,
+      claim: state.claim,
+      claimLoading: state.claimLoading,
+      getClaimById,
+      deleteClaim,
+      assignClaimToLoggedInUser
     }}>
       {children}
     </ClaimsContext.Provider>
