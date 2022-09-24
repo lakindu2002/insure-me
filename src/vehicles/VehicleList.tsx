@@ -1,5 +1,5 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import React, { FC, Fragment, useCallback } from 'react';
+import React, { FC, Fragment, useCallback, useEffect } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { Vehicle as VehicleComponent } from './Vehicle';
@@ -22,7 +22,11 @@ const styles = StyleSheet.create({
 export const VehicleList: FC<VehicleListProps> = () => {
   const { showActionSheetWithOptions } = useActionSheet();
   const theme = useTheme();
-  const { loading, removeVehicle, vehicles } = useVehicles();
+  const { loading, removeVehicle, vehicles, getVehicles } = useVehicles();
+
+  useEffect(() => {
+    getVehicles();
+  }, []);
 
   const onPromptDeleteVehicle = useCallback((vehicleId: string) => {
     Alert.alert('Delete', 'Are you sure you want to delete this vehicle?', [

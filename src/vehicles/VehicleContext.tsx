@@ -141,11 +141,6 @@ export const VehiclesProvider: FC<VehiclesProviderProps> = ({ children }) => {
     }
   }, []);
 
-
-  useEffect(() => {
-    getVehicles();
-  }, [getVehicles]);
-
   return (
     <VehicleContext.Provider
       value={{
