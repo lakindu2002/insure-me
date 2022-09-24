@@ -1,6 +1,9 @@
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useAuth } from '@insureme/auth/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FC } from 'react';
-import { useTheme } from 'react-native-paper';
+import { Button, IconButton, useTheme } from 'react-native-paper';
 import { ProfileItemEditScreen } from './ProfileItemEditScreen';
 import { ProfileScreen } from './ProfileScreen';
 
@@ -20,19 +23,56 @@ export type ProfileStackNavigationParamList = {
 const ProfileNavigation = createNativeStackNavigator<ProfileStackNavigationParamList>();
 
 const ProfileNavigator: FC = () => {
+
+  const sheet = useActionSheet();
   const theme = useTheme();
+  const navigation = useNavigation();
+  const { logout } = useAuth();
+
+
+  const handleAccountOptionsClick = () => {
+    sheet.showActionSheetWithOptions({
+      options: ['Logout', 'Cancel'],
+      cancelButtonIndex: 1,
+      destructiveButtonIndex: 0,
+      title: 'Account Options',
+      containerStyle: {
+        backgroundColor: theme.colors.background,
+      },
+      textStyle: {
+        color: theme.colors.text,
+      },
+      titleTextStyle: {
+        color: theme.colors.text,
+      }
+    }, async (buttonIndex) => {
+      if (buttonIndex === 0) {
+        await logout();
+        (navigation as any).navigate('Login');
+      }
+    })
+  }
+
   return (
     <ProfileNavigation.Navigator
       initialRouteName='View'
-      screenOptions={{
+      screenOptions={({ route }) => ({
         presentation: 'modal', headerShown: true,
         headerStyle: {
           backgroundColor: theme.colors.background,
         },
         headerTitleStyle: {
           color: theme.colors.text,
+        },
+        ...route.name === 'View' && {
+          headerRight: (props) => (
+            <IconButton
+              onPress={handleAccountOptionsClick}
+              icon={'dots-vertical'}
+            />
+          )
         }
-      }}>
+      })}>
       <ProfileNavigation.Screen name="Name" component={ProfileItemEditScreen}
         options={{
           headerTitle: 'Edit Full Name'
