@@ -16,13 +16,6 @@ type ClaimListScreenNavigationProp = NativeStackScreenProps<ClaimNavigatorParamL
 
 interface ClaimListScreenProps extends ClaimListScreenNavigationProp { }
 
-const renderScene = SceneMap({
-  [ClaimStatus.PROCESSING]: ClaimList,
-  [ClaimStatus.APPROVED]: ClaimList,
-  [ClaimStatus.PENDING]: ClaimList,
-  [ClaimStatus.REJECTED]: ClaimList,
-})
-
 const tabs = [
   {
     key: ClaimStatus.PENDING,
@@ -88,6 +81,10 @@ export const ClaimListScreen: FC<ClaimListScreenProps> = ({ navigation }) => {
     setCurrentTabIndex(index);
   }
 
+  const handleClaimClick = (claimId: string) => {
+    navigation.navigate('ClaimDetail', { claimId });
+  }
+
   return (
     <>
       <TabView
@@ -98,7 +95,15 @@ export const ClaimListScreen: FC<ClaimListScreenProps> = ({ navigation }) => {
           index: currentTabIndex,
           routes: tabs,
         }}
-        renderScene={renderScene}
+        renderScene={({ route }) => {
+          switch (route.key) {
+            case ClaimStatus.PENDING: return <ClaimList onItemClick={handleClaimClick} />
+            case ClaimStatus.APPROVED: return <ClaimList onItemClick={handleClaimClick} />
+            case ClaimStatus.PROCESSING: return <ClaimList onItemClick={handleClaimClick} />
+            case ClaimStatus.REJECTED: return <ClaimList onItemClick={handleClaimClick} />
+          }
+        }
+        }
         initialLayout={{ width: layout.width }}
         renderTabBar={(props) => {
           const inputRange = props.navigationState.routes.map((_route, i) => i);

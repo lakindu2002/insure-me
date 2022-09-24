@@ -1,9 +1,11 @@
 import { Alert } from '@insureme/common/Alert';
 import { Loader } from '@insureme/common/Loader';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { FC, Fragment } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { ClaimCard } from './ClaimCard';
+import { ClaimNavigatorParamList } from './ClaimNavigator';
 import { useClaims } from './ClaimsContext';
 
 const stylesheet = StyleSheet.create({
@@ -13,12 +15,17 @@ const stylesheet = StyleSheet.create({
   }
 })
 
-export const ClaimList: FC = React.memo((props) => {
+
+interface ClaimListProps {
+  onItemClick: (claimId: string) => void;
+}
+
+export const ClaimList: FC<ClaimListProps> = ({ onItemClick }) => {
   const { claims, claimsLoading } = useClaims();
   const theme = useTheme();
 
   const handleClaimDetailsClick = (claimId: string) => () => {
-    console.log('claimId', claimId);
+    onItemClick(claimId);
   }
 
   return (
@@ -51,4 +58,4 @@ export const ClaimList: FC = React.memo((props) => {
       )}
     </ScrollView>
   )
-});
+};
