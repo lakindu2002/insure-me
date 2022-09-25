@@ -49,7 +49,7 @@ export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation })
       { text: 'Cancel', style: 'cancel' },
       { text: 'Assign To Me', style: 'default', onPress: async () => { await assignClaimToLoggedInUser(); } },
     ])
-  }, [])
+  }, [assignClaimToLoggedInUser])
 
   const launchUpdateStatusWizard = useCallback(() => {
     setOpenStatsUpdateModal(true);
