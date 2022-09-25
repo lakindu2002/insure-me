@@ -91,7 +91,7 @@ export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation })
         launchUpdateStatusWizard();
       }
     });
-  }, [launchDeleteConfirmation, launchAssignConfirmation, launchUpdateStatusWizard, user?.role, claim?.status]);
+  }, [launchDeleteConfirmation, launchAssignConfirmation, launchUpdateStatusWizard, user?.role, claim?.status, theme]);
 
   useEffect(() => {
     navigation.setOptions({

@@ -66,7 +66,7 @@ export const VehicleList: FC<VehicleListProps> = () => {
         onPromptDeleteVehicle(vehicleId);
       }
     });
-  }, []);
+  }, [theme]);
 
   return (
     <View style={[styles.margin10]}>
