@@ -311,6 +311,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
       }
       await wrapFirebasePromise(claimRef.doc(claimId).set(claim), isConnected);
       dispatch({ type: 'ADD_CLAIM', payload: claim });
+      showToast('Claim created successfully', { type: 'success' });
       return true;
     } catch (err) {
       showToast('Error creating claim', { type: 'danger' });
@@ -340,6 +341,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
     try {
       await wrapFirebasePromise(claimRef.doc(id).delete(), isConnected);
       dispatch({ type: 'DELETE_CLAIM', payload: id });
+      showToast('Claim deleted successfully', { type: 'success' });
       return true;
     } catch (err) {
       showToast('Error deleting claim', { type: 'danger' });
