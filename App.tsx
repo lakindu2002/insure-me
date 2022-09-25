@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { DarkTheme, DefaultTheme, Provider as ThemeProvider } from 'react-native-paper';
 import { AuthConsumer, AuthProvider } from '@insureme/auth/AuthContext';
@@ -7,6 +7,7 @@ import RootNavigator from '@insureme/common/RootNavigator';
 import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 import storage from '@react-native-firebase/firestore';
 import { NetworkProvider } from 'react-native-offline';
+import PermissionManager from '@insureme/common/PermissionManager';
 
 
 
@@ -42,6 +43,15 @@ const FirestoreWrapper: FC<{ children: JSX.Element }> = ({ children }) => {
 }
 
 const App: FC = () => {
+  const [permissionsInitialized, setPermissionsInitialized] = useState<boolean>(false);
+  useEffect(() => {
+    // check if user has permissions to access media and camera, if not, request them
+    const evaluatePermissions = async () => {
+      await PermissionManager.requestAppPermissions();
+      setPermissionsInitialized(true);
+    }
+    evaluatePermissions();
+  }, []);
   return (
     <NetworkProvider>
       <FirestoreWrapper>
@@ -53,9 +63,11 @@ const App: FC = () => {
                   theme={user?.preferredMode === 'dark' ? darkTheme : lightTheme}
                 >
                   <ToastProvider>
-                    <NavigationContainer>
-                      <RootNavigator />
-                    </NavigationContainer>
+                    {permissionsInitialized && (
+                      <NavigationContainer>
+                        <RootNavigator />
+                      </NavigationContainer>
+                    )}
                   </ToastProvider>
                 </ThemeProvider>
               )}

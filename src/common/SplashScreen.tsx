@@ -27,36 +27,24 @@ const stylesheet = StyleSheet.create({
 export const SplashScreen: FC<SplashScreenProps> = (props) => {
   const { navigation } = props;
   const { user, initializing } = useAuth();
-  const [permissionsInitialized, setPermissionsInitialized] = useState<boolean>(false);
   const theme = useTheme();
 
   useEffect(() => {
-    // check if user has permissions to access media and camera, if not, request them
-    const evaluatePermissions = async () => {
-      await PermissionManager.requestAppPermissions();
-      setPermissionsInitialized(true);
+    const navigateToHome = () => {
+      if (!user || !user.role) {
+        // when context initializes, it initializes with entire user or user with just a color theme (so to handle that case, navigate to login as no actual user present, its just a color theme config)
+        navigation.replace('Login');
+      } else if (user && user.role === UserRole.CUSTOMER) {
+        navigation.replace('Customer');
+      } else if (user && user.role === UserRole.CLAIM_ADJUSTER) {
+        navigation.replace('ClaimAdjuster');
+      }
     }
-    evaluatePermissions();
-  }, []);
-
-  useEffect(() => {
-    if (initializing || !permissionsInitialized) {
+    if (initializing) {
       return;
     }
-    if (!user) {
-      navigation.replace('Login');
-      return;
-    }
-    if (user && user.role === UserRole.CUSTOMER) {
-      navigation.replace('Customer');
-      return;
-    }
-    if (user && user.role === UserRole.CLAIM_ADJUSTER) {
-      navigation.replace('ClaimAdjuster');
-      return;
-    }
-  }, [user, initializing, permissionsInitialized]);
-
+    navigateToHome();
+  }, [user, initializing]);
   return (
     <View style={[globalStyles.container, stylesheet.wrapperCenter, { backgroundColor: theme.colors.background }]}>
       <AppLogo width={150}
