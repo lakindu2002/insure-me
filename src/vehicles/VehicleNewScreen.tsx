@@ -54,7 +54,7 @@ export const VehicleNewScreen: FC<VehicleNewScreenProps> = ({ navigation }) => {
     },
     validationSchema: Yup.object({
       licensePlate: Yup.string().required('License plate is required'),
-      chassisNumber: Yup.string().required('Chassis number is required'),
+      chassisNumber: Yup.string().required('Chassis number is required').min(17, 'Chassis number must be 17 characters').max(17, 'Chassis number must be 17 characters'),
       model: Yup.string().required('Vehicle model is required'),
       brand: Yup.string().required('Vehicle brand is required'),
       pictureUrl: Yup.string().required('Picture is required')
