@@ -174,7 +174,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   }
 
   const logout = async () => {
-    await firestore().clearPersistence();
     await auth().signOut();
     dispatch({ type: 'CLEAR_USER' });
   }
