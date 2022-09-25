@@ -22,6 +22,7 @@ const CustomerBottomTabNavigator: FC = () => {
   return (
     <CustomerBottomTabNavigation.Navigator
       screenOptions={({ route }) => ({
+        headerTintColor: theme.colors.text,
         tabBarIcon: ({ color, focused }) => {
           if (route.name === 'Vehicles') {
             return (

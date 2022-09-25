@@ -24,6 +24,7 @@ const ClaimNavigator: FC = () => {
           headerStyle: {
             backgroundColor: theme.colors.background
           },
+          headerTintColor: theme.colors.text,
           headerTitleStyle: {
             color: theme.colors.text
           },

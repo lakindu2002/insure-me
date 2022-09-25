@@ -18,6 +18,7 @@ const ClaimAdjusterBottomTabsNavigator: FC = () => {
   return (
     <ClaimAdjusterBottomTabsNavigation.Navigator
       screenOptions={({ route }) => ({
+        headerTintColor: theme.colors.text,
         tabBarIcon: ({ color, focused }) => {
           if (route.name === 'Claims') {
             return (

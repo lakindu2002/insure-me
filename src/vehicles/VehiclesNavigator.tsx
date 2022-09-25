@@ -18,6 +18,7 @@ const VehiclesNavigator: FC = () => {
     <VehiclesProvider>
       <VehiclesStackNavigator.Navigator
         screenOptions={{
+          headerTintColor: theme.colors.text,
           headerStyle: {
             backgroundColor: theme.colors.background
           },

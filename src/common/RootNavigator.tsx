@@ -4,6 +4,7 @@ import ClaimAdjusterBottomTabsNavigator from '@insureme/common/ClaimAdjusterNavi
 import CustomerBottomTabNavigator from '@insureme/common/CustomerNavigator';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FC } from 'react';
+import { useTheme } from 'react-native-paper';
 import { SplashScreen } from './SplashScreen';
 
 
@@ -18,9 +19,11 @@ export type RootStackNavigatorParamList = {
 const RootStackNavigator = createNativeStackNavigator<RootStackNavigatorParamList>();
 
 const RootNavigator: FC = () => {
+  const theme = useTheme();
   return (
     <RootStackNavigator.Navigator initialRouteName="Splash"
       screenOptions={{
+        headerTintColor: theme.colors.text,
         headerShown: false,
       }}
     >

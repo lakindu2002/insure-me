@@ -3,7 +3,7 @@ import { useAuth } from '@insureme/auth/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FC } from 'react';
-import { IconButton, useTheme } from 'react-native-paper';
+import { Button, IconButton, useTheme } from 'react-native-paper';
 import { ProfileItemEditScreen } from './ProfileItemEditScreen';
 import { ProfileScreen } from './ProfileScreen';
 
@@ -64,6 +64,7 @@ const ProfileNavigator: FC = () => {
         headerTitleStyle: {
           color: theme.colors.text,
         },
+        headerTintColor: theme.colors.text,
         ...route.name === 'View' && {
           headerRight: (props) => (
             <IconButton
