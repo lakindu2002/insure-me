@@ -55,7 +55,7 @@ export const ProfileItemEditScreen: FC<ProfileItemEditScreenProps> = (props) => 
     },
     validationSchema: Yup.object({
       ...routeName === 'Name' && { value: Yup.string().required('Full Name is required') },
-      ...routeName === 'Contact' && { value: Yup.number().required('Contact is required').typeError('Contact number must be a number').max(10, 'Contact number must be 10 characters').min(10, 'Contact number must be 10 characters') },
+      ...routeName === 'Contact' && { value: Yup.number().required('Contact is required').typeError('Contact number must be a number') },
       ...routeName === 'Address' && { value: Yup.string().required('Address is required') },
     })
   })
