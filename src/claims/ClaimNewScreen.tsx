@@ -12,7 +12,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Divider, HelperText, IconButton, Provider, Text, useTheme } from 'react-native-paper';
 import { useToast } from 'react-native-toast-notifications';
-import { AccidentType, Claim } from './Claim.type';
+import { AccidentType, Claim } from './ClaimType';
 import { ClaimNavigatorParamList } from './ClaimNavigator';
 import { useClaims } from './ClaimsContext';
 

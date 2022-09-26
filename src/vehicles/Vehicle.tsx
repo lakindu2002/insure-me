@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { View } from 'react-native';
 import { Card, Paragraph } from 'react-native-paper';
-import { Vehicle as VehicleType } from './Vehicle.type';
+import { Vehicle as VehicleType } from './VehicleType';
 
 interface VehicleProps {
   vehicle: VehicleType;

@@ -1,12 +1,11 @@
 import { useAuth } from '@insureme/auth/AuthContext';
-import { UserRole } from '@insureme/auth/User.type';
+import { UserRole } from '@insureme/auth/UserType';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, useTheme } from 'react-native-paper';
 import { AppLogo } from './AppLogo';
 import { globalStyles } from './GlobalStyles';
-import PermissionManager from './PermissionManager';
 import { RootStackNavigatorParamList } from './RootNavigator';
 
 

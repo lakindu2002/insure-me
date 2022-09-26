@@ -2,8 +2,8 @@ import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Button, Dialog, Portal, RadioButton, Text } from 'react-native-paper';
-import { ClaimStatus } from './Claim.type';
-import { getClaimStatusName } from './Claim.util';
+import { ClaimStatus } from './ClaimType';
+import { getClaimStatusName } from './ClaimUtil';
 import { useClaims } from './ClaimsContext';
 
 interface ClaimStatusUpdateModalProps {

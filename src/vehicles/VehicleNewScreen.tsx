@@ -10,7 +10,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { HelperText, IconButton, useTheme } from 'react-native-paper';
 import { useToast } from 'react-native-toast-notifications';
 import * as Yup from 'yup';
-import { Vehicle } from './Vehicle.type';
+import { Vehicle } from './VehicleType';
 import { useVehicles } from './VehicleContext';
 import { VehiclesNavigatorParamList } from './VehiclesNavigator';
 

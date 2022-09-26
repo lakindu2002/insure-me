@@ -1,13 +1,13 @@
 import { useAuth } from '@insureme/auth/AuthContext';
-import { UserRole } from '@insureme/auth/User.type';
+import { UserRole } from '@insureme/auth/UserType';
 import { FloatingActionButton } from '@insureme/common/FloatingActionButton';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Animated, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { TabView } from 'react-native-tab-view';
-import { ClaimStatus } from './Claim.type';
-import { getClaimStatusName } from './Claim.util';
+import { ClaimStatus } from './ClaimType';
+import { getClaimStatusName } from './ClaimUtil';
 import { ClaimList } from './ClaimList';
 import { ClaimNavigatorParamList } from './ClaimNavigator';
 import { useClaims } from './ClaimsContext';

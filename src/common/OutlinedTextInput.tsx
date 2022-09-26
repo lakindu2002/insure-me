@@ -1,4 +1,4 @@
-import React, { FC, Fragment } from 'react';
+import React, { FC } from 'react';
 import { View } from 'react-native';
 import { HelperText, TextInput } from 'react-native-paper';
 import { TextInputProps } from 'react-native-paper/lib/typescript/components/TextInput/TextInput';

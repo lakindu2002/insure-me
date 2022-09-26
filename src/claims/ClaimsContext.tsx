@@ -1,11 +1,11 @@
 import React, { createContext, FC, useCallback, useContext, useEffect, useReducer } from 'react';
-import { AccidentType, Claim, ClaimStatus, ClaimVehicle } from './Claim.type';
+import { AccidentType, Claim, ClaimStatus, ClaimVehicle } from './ClaimType';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useAuth } from '@insureme/auth/AuthContext';
-import { UserRole } from '@insureme/auth/User.type';
+import { UserRole } from '@insureme/auth/UserType';
 import { useToast } from 'react-native-toast-notifications';
-import { getAccidentTypeName, getClaimStatusName } from './Claim.util';
+import { getAccidentTypeName, getClaimStatusName } from './ClaimUtil';
 import { wrapFirebasePromise } from '@insureme/common/FirebasePromiseWrap';
 import { useIsConnected } from 'react-native-offline';
 

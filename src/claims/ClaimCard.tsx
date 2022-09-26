@@ -2,8 +2,8 @@ import { CustomButton } from '@insureme/common/CustomButton';
 import moment from 'moment';
 import React, { FC } from 'react';
 import { Card, Text, useTheme } from 'react-native-paper';
-import { Claim } from './Claim.type';
-import { getAccidentTypeName } from './Claim.util';
+import { Claim } from './ClaimType';
+import { getAccidentTypeName } from './ClaimUtil';
 
 interface ClaimCardProps {
   claim: Claim;

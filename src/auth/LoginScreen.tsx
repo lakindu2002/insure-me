@@ -12,7 +12,7 @@ import { useAuth } from './AuthContext';
 import { useToast } from 'react-native-toast-notifications';
 import { RootStackNavigatorParamList } from '@insureme/common/RootNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { UserRole } from './User.type';
+import { UserRole } from './UserType';
 
 const styles = StyleSheet.create({
   wrapper: {

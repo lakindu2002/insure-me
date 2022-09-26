@@ -1,5 +1,5 @@
 import { createContext, FC, useCallback, useContext, useReducer, useState } from 'react';
-import { Vehicle } from './Vehicle.type';
+import { Vehicle } from './VehicleType';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useToast } from 'react-native-toast-notifications';

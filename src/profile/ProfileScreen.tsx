@@ -8,8 +8,8 @@ import { ProfileStackNavigationParamList } from './ProfileNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useToast } from 'react-native-toast-notifications';
-import { UserRole } from '@insureme/auth/User.type';
-import { openCamera, openImagePicker } from '@insureme/common/ImagePicker.service';
+import { UserRole } from '@insureme/auth/UserType';
+import { openCamera, openImagePicker } from '@insureme/common/ImagePickerService';
 import { Image } from '@insureme/common/Image';
 
 type ProfileScreenNavigationProp = NativeStackScreenProps<ProfileStackNavigationParamList, 'View'>;

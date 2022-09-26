@@ -13,7 +13,7 @@ import {
 } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { useAuth } from './AuthContext';
-import { UserRole } from './User.type';
+import { UserRole } from './UserType';
 import { useToast } from 'react-native-toast-notifications';
 import { RootStackNavigatorParamList } from '@insureme/common/RootNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';

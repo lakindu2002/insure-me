@@ -1,4 +1,4 @@
-import { AccidentType, ClaimStatus } from './Claim.type';
+import { AccidentType, ClaimStatus } from './ClaimType';
 
 const accidentTypeNames = {
   [AccidentType.HEAD_ON]: 'Head On',

@@ -1,6 +1,6 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useAuth } from '@insureme/auth/AuthContext';
-import { UserRole } from '@insureme/auth/User.type';
+import { UserRole } from '@insureme/auth/UserType';
 import { Carousel } from '@insureme/common/Carousel';
 import { globalStyles } from '@insureme/common/GlobalStyles';
 import { Loader } from '@insureme/common/Loader';
@@ -10,8 +10,8 @@ import moment from 'moment';
 import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { Divider, IconButton, List, useTheme } from 'react-native-paper';
-import { ClaimStatus } from './Claim.type';
-import { getAccidentTypeName, getClaimStatusName } from './Claim.util';
+import { ClaimStatus } from './ClaimType';
+import { getAccidentTypeName, getClaimStatusName } from './ClaimUtil';
 import { ClaimNavigatorParamList } from './ClaimNavigator';
 import { useClaims } from './ClaimsContext';
 import { ClaimStatusUpdateModal } from './ClaimStatusUpdateModal';

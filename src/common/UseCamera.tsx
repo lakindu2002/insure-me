@@ -1,15 +1,12 @@
-import {useActionSheet} from '@expo/react-native-action-sheet';
-import {useMemo, useState} from 'react';
-import {useTheme} from 'react-native-paper';
-import {
-  openCamera,
-  openImagePicker,
-} from '@insureme/common/ImagePicker.service';
-import {Image} from 'react-native-image-crop-picker';
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useMemo, useState } from 'react';
+import { useTheme } from 'react-native-paper';
+import { openCamera, openImagePicker } from '@insureme/common/ImagePickerService';
+import { Image } from 'react-native-image-crop-picker';
 
 export const useCamera = (maxImages: number) => {
   const theme = useTheme();
-  const {showActionSheetWithOptions} = useActionSheet();
+  const { showActionSheetWithOptions } = useActionSheet();
   const [images, setImages] = useState<Image[]>([]);
 
   const photoActionSheetOptions: any = useMemo(
@@ -47,7 +44,7 @@ export const useCamera = (maxImages: number) => {
             const file = (await openImagePicker(maxImages)) as Image;
             setImages([file]);
           }
-        } catch (err) {}
+        } catch (err) { }
       },
     );
   };

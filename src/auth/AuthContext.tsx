@@ -1,5 +1,5 @@
 import React, { createContext, FC, useContext, useEffect, useReducer, useState } from 'react';
-import { User, UserRole } from './User.type';
+import { User, UserRole } from './UserType';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
