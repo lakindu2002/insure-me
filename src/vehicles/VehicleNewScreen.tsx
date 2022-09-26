@@ -36,10 +36,10 @@ const styles = StyleSheet.create({
 
 export const VehicleNewScreen: FC<VehicleNewScreenProps> = ({ navigation }) => {
   const theme = useTheme();
-  const { launchPhotoSelection, images } = useCamera(5);
   const { addVehicle } = useVehicles();
   const toast = useToast();
 
+  const { launchPhotoSelection, images } = useCamera(1);
   const handleUploadClick = () => {
     launchPhotoSelection();
   }
