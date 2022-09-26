@@ -224,7 +224,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
       }
       const data = await query.get();
       if (!data.empty) {
-        const resp = data.docs.map((doc) => doc.data() as Claim);
+        const resp = data.docs.map((doc) => ({ ...doc.data()} as Claim));
         dispatch({ type: 'SET_CLAIMS', payload: resp });
       }
     } catch (err) {
@@ -325,17 +325,16 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
     try {
       dispatch({ type: 'SET_CLAIM_LOADING', payload: true });
       dispatch({ type: 'SET_CLAIM', payload: undefined });
-      const snapshot = await claimRef.doc(id).get();
-      if (snapshot.exists) {
-        const data = snapshot.data() as Claim;
-        dispatch({ type: 'SET_CLAIM', payload: data });
+      const claim = state.claims.find((claim) => claim.id === id);
+      if (claim) {
+        dispatch({ type: 'SET_CLAIM', payload: claim });
       }
     } catch (err) {
       showToast('Error loading claim', { type: 'danger' });
     } finally {
       dispatch({ type: 'SET_CLAIM_LOADING', payload: false });
     }
-  }, []);
+  }, [state.claims]);
 
   const deleteClaim = useCallback(async (id: string) => {
     try {

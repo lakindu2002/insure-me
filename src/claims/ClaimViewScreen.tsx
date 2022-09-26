@@ -29,6 +29,13 @@ export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation })
   const theme = useTheme();
   const [openStatsUpdateModal, setOpenStatsUpdateModal] = useState(false);
 
+  useEffect(() => {
+    const loadCLaim = async () => {
+      await getClaimById(claimId);
+    }
+    loadCLaim();
+  }, [claimId]);
+
   const launchDeleteConfirmation = useCallback(() => {
     if (!claim?.id) {
       return;
@@ -105,10 +112,6 @@ export const ClaimViewScreen: FC<ClaimViewScreenProps> = ({ route, navigation })
       }
     })
   }, [handleLaunchClaimOptions, claim?.id])
-
-  useEffect(() => {
-    getClaimById(claimId);
-  }, [claimId]);
 
   return (
     <ScrollView style={{ ...globalStyles.container, backgroundColor: theme.colors.background }}>
