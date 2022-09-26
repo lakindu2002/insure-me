@@ -224,7 +224,7 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
       }
       const data = await query.get();
       if (!data.empty) {
-        const resp = data.docs.map((doc) => ({ ...doc.data()} as Claim));
+        const resp = data.docs.map((doc) => ({ ...doc.data() } as Claim));
         dispatch({ type: 'SET_CLAIMS', payload: resp });
       }
     } catch (err) {
@@ -325,8 +325,14 @@ export const ClaimsProvider: FC<ClaimsProviderProps> = ({ children }) => {
     try {
       dispatch({ type: 'SET_CLAIM_LOADING', payload: true });
       dispatch({ type: 'SET_CLAIM', payload: undefined });
-      const claim = state.claims.find((claim) => claim.id === id);
-      if (claim) {
+      const claimInCache = state.claims.find((claim) => claim.id === id);
+      if (claimInCache) {
+        dispatch({ type: 'SET_CLAIM', payload: claimInCache });
+        return;
+      }
+      const snapshot = await claimRef.doc(id).get({ source: 'default' }); // not in local cache, fetch from server
+      if (snapshot.exists) {
+        const claim = snapshot.data() as Claim;
         dispatch({ type: 'SET_CLAIM', payload: claim });
       }
     } catch (err) {
