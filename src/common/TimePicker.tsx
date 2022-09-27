@@ -2,7 +2,7 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { FC, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button } from 'react-native-paper';
+import { CustomButton } from './CustomButton';
 import { OutlinedTextInput } from './OutlinedTextInput';
 
 interface TimePickerProps {
@@ -46,12 +46,11 @@ export const TimePicker: FC<TimePickerProps> = ({ initialValue = Date.now(), onD
         editable={false}
         value={moment(initialValue).format(mode === 'time' ? 'HH:mm' : 'Do MMMM YYYY')}
       />
-      <Button
+      <CustomButton
         mode='contained'
         onPress={launchTimePicker}
-      >
-        Select {mode === 'date' ? 'Date' : 'Time'}
-      </Button>
+        label={`Select ${mode === 'date' ? 'Date' : 'Time'}`}
+      />
     </View>
   );
 };

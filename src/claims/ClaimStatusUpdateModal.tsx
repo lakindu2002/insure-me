@@ -1,10 +1,11 @@
 import { OutlinedTextInput } from '@insureme/common/OutlinedTextInput';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Button, Dialog, Portal, RadioButton, Text } from 'react-native-paper';
+import { Dialog, Portal, RadioButton, Text } from 'react-native-paper';
 import { ClaimStatus } from './ClaimType';
 import { getClaimStatusName } from './ClaimUtil';
 import { useClaims } from './ClaimsContext';
+import { CustomButton } from '@insureme/common/CustomButton';
 
 interface ClaimStatusUpdateModalProps {
   open: boolean;
@@ -129,15 +130,17 @@ export const ClaimStatusUpdateModal: FC<ClaimStatusUpdateModalProps> = (props) =
           )}
         </Dialog.Content>
         <Dialog.Actions>
-          <Button
+          <CustomButton
             mode='outlined'
             style={{ marginRight: 10 }}
-            onPress={onClose}>Dismiss</Button>
-          <Button
+            label='Dismiss'
+            onPress={onClose} />
+          <CustomButton
             mode='contained'
             loading={updating}
+            label='Change Status'
             disabled={selectedStatus === claim?.status}
-            onPress={handleConfirmStatusChange}>Change Status</Button>
+            onPress={handleConfirmStatusChange} />
         </Dialog.Actions>
       </Dialog>
     </Portal>
