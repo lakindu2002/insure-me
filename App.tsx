@@ -8,8 +8,7 @@ import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-acti
 import storage from '@react-native-firebase/firestore';
 import { NetworkProvider } from 'react-native-offline';
 import PermissionManager from '@insureme/common/PermissionManager';
-
-
+import { NetworkWrapper } from '@insureme/common/NetworkWrapper';
 
 const baseTheme = {
   roundness: 8,
@@ -55,28 +54,30 @@ const App: FC = () => {
   return (
     <NetworkProvider>
       <FirestoreWrapper>
-        <ActionSheetProvider>
-          <AuthProvider>
-            <AuthConsumer>
-              {({ user }) => (
-                <ThemeProvider
-                  theme={user?.preferredMode === 'dark' ? darkTheme : lightTheme}
-                >
-                  <ToastProvider>
-                    {permissionsInitialized && (
-                      <NavigationContainer>
-                        <RootNavigator />
-                      </NavigationContainer>
-                    )}
-                  </ToastProvider>
-                </ThemeProvider>
-              )}
+        <ToastProvider>
+          <NetworkWrapper>
+            <ActionSheetProvider>
+              <AuthProvider>
+                <AuthConsumer>
+                  {({ user }) => (
+                    <ThemeProvider
+                      theme={user?.preferredMode === 'dark' ? darkTheme : lightTheme}
+                    >
+                      {permissionsInitialized && (
+                        <NavigationContainer>
+                          <RootNavigator />
+                        </NavigationContainer>
+                      )}
+                    </ThemeProvider>
+                  )}
 
-            </AuthConsumer>
-          </AuthProvider >
-        </ActionSheetProvider>
+                </AuthConsumer>
+              </AuthProvider >
+            </ActionSheetProvider>
+          </NetworkWrapper>
+        </ToastProvider>
       </FirestoreWrapper>
-    </NetworkProvider>
+    </NetworkProvider >
   );
 };
 
